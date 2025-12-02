@@ -340,20 +340,29 @@ function renderCertificateButton(){
 }
 
 function generateCertificate(){
-  const user = (JSON.parse(localStorage.getItem('user')||'{}').username)||'Usuario';
+  function titleCase(s){ return (s||'').trim().split(/\s+/).map(w=>w? w[0].toUpperCase()+w.slice(1).toLowerCase(): '').join(' '); }
+  const userRaw = (JSON.parse(localStorage.getItem('user')||'{}').username)||'Usuario';
+  const user = titleCase(userRaw);
   const canvas = document.getElementById('cert-canvas'); const ctx = canvas.getContext('2d');
-  const bg = new Image(); bg.src = 'imagen/image.png';
+  const bg = new Image(); bg.src = 'imagen/certificado.png';
+  bg.onerror = ()=>{ bg.src = 'imagen/image.png'; };
   bg.onload = ()=>{
     ctx.drawImage(bg,0,0,canvas.width,canvas.height);
-    ctx.fillStyle = 'rgba(0,10,8,.6)'; ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle = '#00ff88'; ctx.font = '48px JetBrains Mono, monospace'; ctx.textAlign='center';
-    ctx.fillText('Curso de Puertos — Finalizado', canvas.width/2, 180);
+    ctx.fillStyle = 'rgba(0,10,8,.55)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.textAlign='center';
+    ctx.fillStyle = '#00ff88'; ctx.font = '36px JetBrains Mono, monospace';
+    ctx.fillText('Academia de Hacking GREEN_SHELL', canvas.width/2, 120);
+    ctx.fillStyle = '#eafff5'; ctx.font = '48px JetBrains Mono, monospace';
+    ctx.fillText('Certificado de Finalización', canvas.width/2, 180);
     ctx.fillStyle = '#b8ffdf'; ctx.font = '28px JetBrains Mono, monospace';
     ctx.fillText('Otorgado a', canvas.width/2, 240);
-    ctx.fillStyle = '#00ff88'; ctx.font = '40px JetBrains Mono, monospace';
-    ctx.fillText(user, canvas.width/2, 290);
-    ctx.fillStyle = '#b8ffdf'; ctx.font = '22px JetBrains Mono, monospace';
-    ctx.fillText(new Date().toLocaleDateString('es-ES'), canvas.width/2, 340);
+    ctx.fillStyle = '#00ff88'; ctx.font = '44px JetBrains Mono, monospace';
+    ctx.fillText(user, canvas.width/2, 295);
+    ctx.fillStyle = '#b8ffdf'; ctx.font = '24px JetBrains Mono, monospace';
+    ctx.fillText('Curso intensivo de 5 horas de prácticas', canvas.width/2, 340);
+    ctx.fillText('Puertos y servicios de red', canvas.width/2, 372);
+    ctx.fillStyle = '#9cefc8'; ctx.font = '20px JetBrains Mono, monospace';
+    ctx.fillText(new Date().toLocaleDateString('es-ES'), canvas.width/2, 410);
     const data = canvas.toDataURL('image/png'); const dl = document.getElementById('cert-download'); if(dl){ dl.href = data; }
     const modalEl = document.getElementById('certModal'); if(window.bootstrap && modalEl){ const m = new bootstrap.Modal(modalEl); m.show(); }
   };
