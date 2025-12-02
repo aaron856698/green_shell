@@ -635,6 +635,7 @@ window.addEventListener('DOMContentLoaded', async()=>{
   if(toggle){ toggle.onclick = ()=>panel.classList.toggle('hidden'); }
   const start = byId('start-learning'); if(start){ start.onclick = ()=>{ byId('hero')?.classList.add('hidden'); openLesson(lessons[0]); } }
   setupTerminal();
+  setupFloatingTerminals();
   setupEditorModal();
   const hero = byId('hero'); if(hero) hero.classList.add('matrix-anim');
   updateProfileName();
@@ -782,6 +783,7 @@ function simulateCommand(cmd){
     `Root → TLD → Autoritativo`,
     `${dom} A 93.184.216.34`
   ]; }
+  if(tokens[0]==='whoami'){ const user = (JSON.parse(localStorage.getItem('user')||'{}').username)||'user'; return [user]; }
   if(tokens[0]==='python' && tokens[1]==='-c'){ const code = cmd.split('-c')[1]?.trim(); return ['Python 3.11 (sim) -c', code?code.replace(/^["']|["']$/g,''): '(sim) sin código']; }
   if(tokens[0]==='python' && tokens.includes('--version')) return ['Python 3.11.0 (sim)'];
   if(tokens[0]==='python' && tokens.includes('-m') && tokens[tokens.indexOf('-m')+1]==='pip' && tokens.includes('--version')) return ['pip 23.0 (sim)'];
@@ -792,9 +794,111 @@ function simulateCommand(cmd){
     const type = tokens.includes('-sn')?'ping': tokens.includes('-sS')?'syn': tokens.includes('-sU')?'udp': tokens.includes('-sV')?'version':'syn';
     return simulateNmap(host,type);
   }
+  if(tokens[0]==='reverse-shell' && tokens[1]==='connect'){ const target=(tokens[2]||'win').toLowerCase(); const c=getConn(); c.connected=true; c.a='linux'; c.b= target==='win'?'win':'linux'; setConn(c); sendCross('linux','(sim) canal conectado'); sendCross(c.b,'(sim) canal conectado'); return ['(sim) conectado']; }
+  if(tokens[0]==='revsend'){ const text = tokens.slice(1).join(' ').replace(/^"|"$/g,''); const c=getConn(); if(!c.connected) return ['(sim) no hay canal']; sendCross('linux',`linux → ${text}`); sendCross(c.b,`win ← ${text}`); return ['(sim) enviado']; }
   return base.concat(['Comando no reconocido. Escribe "help".']);
 }
 
 // --- Autenticación UI ---
 function isAuthenticated(){ try{ const u=JSON.parse(localStorage.getItem('user')||'null'); return !!(u&&u.username); }catch{ return false; } }
 function logout(){ localStorage.removeItem('user'); updateProfileName(); window.location.href = 'login.html'; }
+
+function makeDraggable(containerId, handleId){
+  const el = byId(containerId); const handle = byId(handleId); if(!el||!handle) return;
+  let dragging=false, ox=0, oy=0;
+  handle.addEventListener('mousedown', e=>{ dragging=true; const r=el.getBoundingClientRect(); ox=e.clientX - r.left; oy=e.clientY - r.top; document.body.style.userSelect='none'; });
+  window.addEventListener('mousemove', e=>{ if(!dragging) return; el.style.left = (e.clientX - ox) + 'px'; el.style.top = (e.clientY - oy) + 'px'; });
+  window.addEventListener('mouseup', ()=>{ dragging=false; document.body.style.userSelect=''; });
+}
+
+function setupFloatingTerminals(){
+  const openLinux = byId('open-linux-term'); const openWin = byId('open-win-term');
+  const linuxWin = byId('termLinuxWindow'); const winWin = byId('termWinWindow');
+  const closeLinux = byId('close-linux'); const closeWin = byId('close-win');
+  if(openLinux && linuxWin){ openLinux.onclick = ()=>{ linuxWin.classList.remove('hidden'); initLinuxTerminal(); }; }
+  if(openWin && winWin){ openWin.onclick = ()=>{ winWin.classList.remove('hidden'); initWinTerminal(); const linuxWin = byId('termLinuxWindow'); if(linuxWin){ linuxWin.classList.remove('hidden'); initLinuxTerminal(); } }; }
+  if(closeLinux && linuxWin){ closeLinux.onclick = ()=>linuxWin.classList.add('hidden'); }
+  if(closeWin && winWin){ closeWin.onclick = ()=>winWin.classList.add('hidden'); }
+  makeDraggable('termLinuxWindow','drag-linux');
+  makeDraggable('termWinWindow','drag-win');
+}
+
+const TERM_STATE_WIN_KEY = 'term_state_win';
+function winTermLoad(){
+  try{ const s = JSON.parse(localStorage.getItem(TERM_STATE_WIN_KEY)||'null'); if(s&&s.cwd&&s.fs) return s; }catch{}
+  const user = (JSON.parse(localStorage.getItem('user')||'{}').username)||'user';
+  const init = { cwd: `C:/Users/${user}`, fs: { [`C:/Users/${user}`]: {type:'dir'} } };
+  localStorage.setItem(TERM_STATE_WIN_KEY, JSON.stringify(init));
+  return init;
+}
+function winTermSave(s){ localStorage.setItem(TERM_STATE_WIN_KEY, JSON.stringify(s)); }
+function winPathJoin(cwd,p){ if(!p||p==='.') return cwd; if(p.match(/^[A-Za-z]:\\|^[A-Za-z]:\//)) return p.replace(/\\/g,'/'); const segs=[...cwd.split('/'),...p.replace(/\\/g,'/').split('/')]; const out=[]; for(const a of segs){ if(!a||a==='.') continue; if(a==='..') out.pop(); else out.push(a); } return out[0].includes(':')? out.join('/') : 'C:/'+out.join('/'); }
+function winListDir(s,dir){ const p = winPathJoin(s.cwd,dir||'.'); const names=new Set(); for(const k of Object.keys(s.fs)){ if(k.startsWith(p+'/')){ const rest=k.slice(p.length+1); const first=rest.split('/')[0]; names.add(first); } } return Array.from(names).sort(); }
+
+function getLinuxPrompt(){ const st = termLoad(); const user = (JSON.parse(localStorage.getItem('user')||'{}').username)||'user'; return `${user} 📁 ${st.cwd} $`; }
+function getWinPrompt(){ const st = winTermLoad(); const user = (JSON.parse(localStorage.getItem('user')||'{}').username)||'user'; const path = st.cwd.replace(/\//g,'\\'); return `${user} ${path}>`; }
+function updateLinuxPrompt(){ const el = byId('term-linux-prompt'); if(el) el.textContent = getLinuxPrompt(); }
+function updateWinPrompt(){ const el = byId('term-win-prompt'); if(el) el.textContent = getWinPrompt(); }
+
+function initLinuxTerminal(){
+  const out = byId('term-linux-out'); const input = byId('term-linux-input'); const run = byId('term-linux-run'); if(!out||!input||!run) return;
+  if(!out.dataset.ready){ const line=document.createElement('div'); line.textContent='Terminal Linux (sim). Escribe "help".'; out.appendChild(line); out.dataset.ready='1'; }
+  const print = txt=>{ const line=document.createElement('div'); line.textContent=txt; out.appendChild(line); out.scrollTop = out.scrollHeight; };
+  const exec = ()=>{ const cmd=(input.value||'').trim(); if(!cmd) return; print(getLinuxPrompt()+' '+cmd); const lines = simulateCommand(cmd); lines.forEach(print); input.value=''; updateLinuxPrompt(); };
+  run.onclick = exec; input.addEventListener('keydown', e=>{ if(e.key==='Enter') exec(); }); updateLinuxPrompt();
+}
+
+function initWinTerminal(){
+  const out = byId('term-win-out'); const input = byId('term-win-input'); const run = byId('term-win-run'); if(!out||!input||!run) return;
+  if(!out.dataset.ready){ const line=document.createElement('div'); line.textContent='Terminal Windows (sim). Escribe "help".'; out.appendChild(line); out.dataset.ready='1'; }
+  const print = txt=>{ const line=document.createElement('div'); line.textContent=txt; out.appendChild(line); out.scrollTop = out.scrollHeight; };
+  const exec = ()=>{ const cmd=(input.value||'').trim(); if(!cmd) return; print(getWinPrompt()+' '+cmd); const lines = simulateWinCommand(cmd); lines.forEach(print); input.value=''; updateWinPrompt(); };
+  run.onclick = exec; input.addEventListener('keydown', e=>{ if(e.key==='Enter') exec(); }); updateWinPrompt();
+}
+
+function getConn(){ try{ return JSON.parse(localStorage.getItem('__term_conn')||'{}'); }catch{ return {}; } }
+function setConn(c){ localStorage.setItem('__term_conn', JSON.stringify(c||{})); }
+function otherKind(kind){ return kind==='linux'?'win':'linux'; }
+function sendCross(kind, msg){ const outId = kind==='linux'?'term-linux-out':'term-win-out'; const out = byId(outId); if(out){ const line=document.createElement('div'); line.textContent = msg; out.appendChild(line); out.scrollTop = out.scrollHeight; } }
+
+function simulateWinCommand(cmd){
+  const tokens = cmd.split(/\s+/);
+  const base = ['(sim) No se ejecuta nada real.'];
+  if(tokens[0]==='help') return base.concat([
+    'Comandos:',
+    '  dir                      → lista archivos (simulado)',
+    '  cd <dir>                 → cambia directorio (simulado)',
+    '  type <file>              → muestra contenido (simulado)',
+    '  echo texto > file        → escribe archivo (simulado)',
+    '  cls                      → limpia pantalla',
+    '  whoami                   → usuario',
+    '  ipconfig                 → red (simulado)',
+    '  notepad <file>           → editor simulado',
+    '  net user                 → usuarios (simulado)',
+    '  powershell -c "..."      → ejecuta línea (simulado)',
+    '  reverse-shell connect linux|windows',
+    '  revsend "texto"          → enviar mensaje por canal simulado'
+  ]);
+  if(tokens[0]==='cls'){ byId('term-win-out').innerHTML=''; return []; }
+  const st = winTermLoad();
+  if(tokens[0]==='cd'){ st.cwd = winPathJoin(st.cwd, tokens[1]||'C:/'); winTermSave(st); updateWinPrompt(); return [`(sim) cwd: ${st.cwd}`]; }
+  if(tokens[0]==='dir'){ const dir = tokens[1]||'.'; const list=winListDir(st,dir); return [list.length?list.join('  '):'(vacío)']; }
+  if(tokens[0]==='type'){ const p = winPathJoin(st.cwd, tokens[1]||''); const f=st.fs[p]; return [f?.content||'(sim) archivo vacío o no existe']; }
+  if(tokens[0]==='echo' && tokens.includes('>')){ const idx=tokens.indexOf('>'); const text = tokens.slice(1,idx).join(' ').replace(/^"|"$/g,''); const file = winPathJoin(st.cwd, tokens[idx+1]); st.fs[file]={type:'file',content:text}; winTermSave(st); return [`(sim) escrito en ${file}`]; }
+  if(tokens[0]==='notepad'){ const p = winPathJoin(st.cwd, tokens[1]||''); if(!p) return ['Uso: notepad <file>']; openEditorWithFile(p); return [`(sim) editor abierto para ${p}`]; }
+  if(tokens[0]==='whoami'){ const user = (JSON.parse(localStorage.getItem('user')||'{}').username)||'user'; return [user]; }
+  if(tokens[0]==='ipconfig') return [
+    'Adaptador Ethernet Conexión local:',
+    '   Dirección IPv4 . . . . . . . . . . . . : 192.168.1.2',
+    '   Máscara de subred . . . . . . . . . . . : 255.255.255.0',
+    '   Puerta de enlace predeterminada . . . . : 192.168.1.1'
+  ];
+  if(tokens[0]==='net' && tokens[1]==='user') return [
+    'Usuario de prueba (sim)',
+    'Administrador (sim)'
+  ];
+  if(tokens[0]==='powershell' && tokens[1]==='-c'){ const code = cmd.split('-c')[1]?.trim(); const txt = code?code.replace(/^"|"$/g,''):''; const out=['PowerShell (sim) -c']; if(/echo\s+.+/.test(txt)){ out.push(txt.replace(/^echo\s+/,'')); } else { out.push('(sim) comando interpretado'); } return out; }
+  if(tokens[0]==='reverse-shell' && tokens[1]==='connect'){ const target=(tokens[2]||'linux').toLowerCase(); const c=getConn(); c.connected=true; c.a='win'; c.b= target==='linux'?'linux':'win'; setConn(c); sendCross('win','(sim) canal conectado'); sendCross(c.b,'(sim) canal conectado'); return ['(sim) conectado']; }
+  if(tokens[0]==='revsend'){ const text = tokens.slice(1).join(' ').replace(/^"|"$/g,''); const c=getConn(); if(!c.connected) return ['(sim) no hay canal']; sendCross('win',`win → ${text}`); sendCross(c.b,`linux ← ${text}`); return ['(sim) enviado']; }
+  return base.concat(['Comando no reconocido. Escribe "help".']);
+}

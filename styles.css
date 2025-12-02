@@ -114,3 +114,7 @@ h2{margin-left:0;text-align:left}
 .matrix-anim{position:relative;overflow:visible}
 .matrix-anim::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg, rgba(0,255,136,.12) 0 2px, transparent 2px 6px);animation:rain 10s linear infinite;pointer-events:none}
 @keyframes rain{to{background-position-y:1000px}}
+
+/* Terminales flotantes */
+.floating-term{position:absolute;z-index:1050;background:#000;border:1px solid rgba(0,255,136,.25);border-radius:8px;padding:12px;width:520px;box-shadow:0 10px 24px rgba(0,0,0,.45)}
+.floating-header{cursor:move;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;color:#00ff88}

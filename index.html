@@ -18,7 +18,8 @@
           <a class="btn btn-outline-success" href="#hero">Inicio</a>
           <a class="btn btn-outline-success" href="#lesson">Lecciones</a>
           <a class="btn btn-outline-success" href="#nmap">Prácticas Nmap</a>
-          <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#terminalModal">Terminal</button>
+          <button id="open-linux-term" class="btn btn-outline-success">Terminal Kali</button>
+          <button id="open-win-term" class="btn btn-outline-success">Terminal Windows</button>
           <button id="progress-toggle" class="btn btn-success">Avance ▾</button>
           <button id="cert-nav-btn" class="btn btn-outline-success">Certificado</button>
           <button id="logout-btn" class="btn btn-outline-success">Cerrar sesión</button>
@@ -110,6 +111,30 @@
   <footer class="site-footer">
     <small>Hecho con ❤️ — Prototipo educativo</small>
   </footer>
+
+  <div id="termLinuxWindow" class="floating-term hidden">
+    <div id="drag-linux" class="floating-header">🐧 Kali
+      <button id="close-linux" class="btn btn-sm btn-outline-success ms-auto">Cerrar</button>
+    </div>
+    <div id="term-linux-out" class="term-out"></div>
+    <div class="input-group mt-2">
+      <span id="term-linux-prompt" class="input-group-text">$</span>
+      <input id="term-linux-input" type="text" class="form-control" placeholder="Comando (help para ayuda)" />
+      <button id="term-linux-run" class="btn btn-success">Ejecutar</button>
+    </div>
+  </div>
+
+  <div id="termWinWindow" class="floating-term hidden" style="left: 540px; top: 140px;">
+    <div id="drag-win" class="floating-header">🪟 Windows
+      <button id="close-win" class="btn btn-sm btn-outline-success ms-auto">Cerrar</button>
+    </div>
+    <div id="term-win-out" class="term-out"></div>
+    <div class="input-group mt-2">
+      <span id="term-win-prompt" class="input-group-text">C:\></span>
+      <input id="term-win-input" type="text" class="form-control" placeholder="Comando (help para ayuda)" />
+      <button id="term-win-run" class="btn btn-success">Ejecutar</button>
+    </div>
+  </div>
 
   <div class="modal fade" id="terminalModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
