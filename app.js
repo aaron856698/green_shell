@@ -703,6 +703,7 @@ function simulateCommand(cmd){
     '  ping <host>                   → ICMP simulado',
     '  arp -a                        → tabla ARP simulada',
     '  dns <dominio>                 → resolución DNS simulada',
+    '  ifconfig | ip a               → red simulada',
     '  mkdir|ls|cd|pwd|touch|cat|echo "txt" > file | >> append',
     '  rm [-r] <path>                → borra archivo/dir simulado',
     '  mv <src> <dst>                → mueve/renombra (simulado)',
@@ -766,7 +767,7 @@ function simulateCommand(cmd){
   }
   if(tokens[0]==='echo' && tokens.includes('>')){ const idx=tokens.indexOf('>'); const text = tokens.slice(1,idx).join(' ').replace(/^"|"$/g,''); const file = pathJoin(st.cwd, tokens[idx+1]); st.fs[file]={type:'file',content:text}; termSave(st); return [`(sim) escrito en ${file}`]; }
   if(tokens[0]==='echo' && tokens.includes('>>')){ const idx=tokens.indexOf('>>'); const text = tokens.slice(1,idx).join(' ').replace(/^"|"$/g,''); const file = pathJoin(st.cwd, tokens[idx+1]); const prev = st.fs[file]?.content||''; st.fs[file]={type:'file',content: (prev ? prev+'\n' : '') + text}; termSave(st); return [`(sim) agregado a ${file}`]; }
-  if(tokens[0]==='ping'){ const host=tokens[1]||'192.168.1.10'; return [
+  if(tokens[0]==='ping'){ const host=tokens[1]||'10.10.10.30'; return [
     `PING ${host} (sim) 56(84) bytes of data.`,
     `64 bytes from ${host}: icmp_seq=1 ttl=64 time=2.18 ms`,
     `64 bytes from ${host}: icmp_seq=2 ttl=64 time=2.12 ms`,
@@ -774,9 +775,14 @@ function simulateCommand(cmd){
     `2 packets transmitted, 2 received, 0% packet loss, time 2002ms`
   ]; }
   if(tokens[0]==='arp' && tokens[1]==='-a') return [
-    `Interface: 192.168.1.2 --- 0x3`,
-    `  192.168.1.10  00-11-22-33-44-55  dynamic`,
-    `  192.168.1.1   aa-bb-cc-dd-ee-ff  dynamic`
+    `Interface: ${getLinuxIP()} --- 0x3`,
+    `  10.10.10.10  00-11-22-33-44-55  dynamic`,
+    `  10.10.10.1   aa-bb-cc-dd-ee-ff  dynamic`
+  ];
+  if(tokens[0]==='ifconfig' || (tokens[0]==='ip' && (tokens[1]==='a' || tokens[1]==='addr'))) return [
+    'eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500',
+    `    inet ${getLinuxIP()}  netmask 255.255.255.0  broadcast 10.10.10.255`,
+    '    ether 02:42:ac:11:00:02  txqueuelen 1000'
   ];
   if(tokens[0]==='dns'){ const dom=tokens[1]||'ejemplo.com'; return [
     `Consulta recursiva (sim) para ${dom}`,
@@ -790,7 +796,7 @@ function simulateCommand(cmd){
   if(tokens[0]==='python'){ const file = tokens[1]||'script.py'; const p=pathJoin(st.cwd,file); const f=st.fs[p]; const out = [`Python 3.11 (sim) ejecutando ${file}`]; if(f?.content){ if(/print\(.*\)/.test(f.content)) out.push(f.content.match(/print\((.*)\)/)[1].replace(/['"]/g,'')); else out.push('(sim) script ejecutado'); } else out.push('(sim) archivo no encontrado'); return out; }
   if(tokens[0]==='bash' && tokens[1]==='-c'){ const code = cmd.split('-c')[1]?.trim(); const txt = code?code.replace(/^["']|["']$/g,''):''; const out=['bash (sim) -c']; if(/echo\s+.+/.test(txt)){ out.push(txt.replace(/^echo\s+/,'')); } else { out.push('(sim) comando interpretado'); } return out; }
   if(tokens[0]==='bash' || tokens[0]==='sh'){ const file = tokens[1]||'script.sh'; const p=pathJoin(st.cwd,file); const f=st.fs[p]; const out=[`${tokens[0]} (sim) ejecutando ${file}`]; if(f?.content){ out.push('(sim) salida del script'); } else out.push('(sim) archivo no encontrado'); return out; }
-  if(tokens[0]==='nmap'){ const host=tokens[tokens.length-1]||'192.168.1.10';
+  if(tokens[0]==='nmap'){ const host=tokens[tokens.length-1]||'10.10.10.10';
     const type = tokens.includes('-sn')?'ping': tokens.includes('-sS')?'syn': tokens.includes('-sU')?'udp': tokens.includes('-sV')?'version':'syn';
     return simulateNmap(host,type);
   }
@@ -861,6 +867,9 @@ function setConn(c){ localStorage.setItem('__term_conn', JSON.stringify(c||{}));
 function otherKind(kind){ return kind==='linux'?'win':'linux'; }
 function sendCross(kind, msg){ const outId = kind==='linux'?'term-linux-out':'term-win-out'; const out = byId(outId); if(out){ const line=document.createElement('div'); line.textContent = msg; out.appendChild(line); out.scrollTop = out.scrollHeight; } }
 
+function getLinuxIP(){ try{ const v=localStorage.getItem('__ip_linux'); if(v) return v; const ip = '10.10.10.'+Math.floor(10+Math.random()*20); localStorage.setItem('__ip_linux', ip); return ip; }catch{ return '10.10.10.2'; } }
+function getWinIP(){ try{ const v=localStorage.getItem('__ip_win'); if(v) return v; const ip = '10.10.10.'+Math.floor(30+Math.random()*20); localStorage.setItem('__ip_win', ip); return ip; }catch{ return '10.10.10.3'; } }
+
 function simulateWinCommand(cmd){
   const tokens = cmd.split(/\s+/);
   const base = ['(sim) No se ejecuta nada real.'];
@@ -888,10 +897,10 @@ function simulateWinCommand(cmd){
   if(tokens[0]==='notepad'){ const p = winPathJoin(st.cwd, tokens[1]||''); if(!p) return ['Uso: notepad <file>']; openEditorWithFile(p); return [`(sim) editor abierto para ${p}`]; }
   if(tokens[0]==='whoami'){ const user = (JSON.parse(localStorage.getItem('user')||'{}').username)||'user'; return [user]; }
   if(tokens[0]==='ipconfig') return [
-    'Adaptador Ethernet Conexión local:',
-    '   Dirección IPv4 . . . . . . . . . . . . : 192.168.1.2',
+    'Adaptador Ethernet Conexión local (sim):',
+    `   Dirección IPv4 . . . . . . . . . . . . : ${getWinIP()}`,
     '   Máscara de subred . . . . . . . . . . . : 255.255.255.0',
-    '   Puerta de enlace predeterminada . . . . : 192.168.1.1'
+    '   Puerta de enlace predeterminada . . . . : 10.10.10.1'
   ];
   if(tokens[0]==='net' && tokens[1]==='user') return [
     'Usuario de prueba (sim)',
