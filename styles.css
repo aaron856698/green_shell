@@ -91,6 +91,7 @@ h2{margin-left:0;text-align:left}
 .input-group-text{background:#062c1b;color:#00ff88;border-color:rgba(0,255,136,.25)}
 .form-control{background:#010101;color:#00ff88;border-color:rgba(0,255,136,.25)}
 .form-control::placeholder{color:#1f6a44}
+.modal-dialog.modal-xl{max-width:1100px}
 
 /* Editor simulado */
 .editor{background:#000;color:#00ff88;border:1px solid rgba(0,255,136,.25)}
