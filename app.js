@@ -328,8 +328,11 @@ function updateProgressUI(){
   if(!window.__lessons) return;
   const {pct} = completionRate(window.__lessons);
   const fill = byId('progress-fill'); if(fill) fill.style.width = pct+'%';
+  const pfill = byId('profile-fill'); if(pfill) pfill.style.width = pct+'%';
+  const ppct = byId('profile-pct'); if(ppct) ppct.textContent = pct+'%';
   renderProgressMenu(window.__lessons);
   renderCertificateButton();
+  updateCertAccess(pct);
 }
 
 function renderCertificateButton(){
@@ -337,6 +340,18 @@ function renderCertificateButton(){
   const {pct} = completionRate(window.__lessons||[]);
   if(pct===100){ btn.classList.remove('hidden'); btn.onclick = generateCertificate; }
   else { btn.classList.add('hidden'); }
+}
+
+function updateCertAccess(pct){
+  const headerBtn = byId('cert-nav-btn');
+  const profileBtn = byId('profile-cert');
+  const handlerLocked = ()=>{ if(window.Swal) Swal.fire('Completa el curso','Alcanza el 100% para descargar el certificado','info'); };
+  const handlerUnlocked = ()=>generateCertificate();
+  [headerBtn, profileBtn].forEach(btn=>{
+    if(!btn) return;
+    if(pct===100){ btn.textContent = '🔓 Certificado'; btn.onclick = handlerUnlocked; btn.classList.remove('disabled'); }
+    else { btn.textContent = '🔒 Certificado'; btn.onclick = handlerLocked; btn.classList.remove('disabled'); }
+  });
 }
 
 function generateCertificate(){

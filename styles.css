@@ -60,6 +60,9 @@ h2{margin-left:0;text-align:left}
 .profile-avatar{width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid #00ff88}
 .profile-name{font-weight:600}
 .profile-meta .label{color:#00ff88;font-weight:600}
+#profile-fill{height:100%;width:0;background:linear-gradient(90deg,#00ff88,#22d3ee)}
+.profile-progress .top{display:flex;justify-content:space-between;color:#9cefc8;font-size:.9rem}
+.profile-progress .line{height:8px;background:#07140a;border-radius:999px;overflow:hidden;border:1px solid rgba(0,255,136,.25)}
 /* Legibilidad del contenido de lecciones */
 #lesson-title{color:#00ff88}
 .content .card p{color:#b8ffdf;font-size:1rem;line-height:1.6;margin:8px 0}
