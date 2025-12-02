@@ -118,3 +118,8 @@ h2{margin-left:0;text-align:left}
 /* Terminales flotantes */
 .floating-term{position:absolute;z-index:1050;background:#000;border:1px solid rgba(0,255,136,.25);border-radius:8px;padding:12px;width:520px;box-shadow:0 10px 24px rgba(0,0,0,.45)}
 .floating-header{cursor:move;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;color:#00ff88}
+.kali-term{background:#0a0014;border-color:rgba(168,85,247,.35)}
+.kali-term .floating-header{color:#c084fc}
+.kali-term .input-group-text{border-color:rgba(168,85,247,.35)}
+.kali-term .form-control{border-color:rgba(168,85,247,.35)}
+.kali-term .btn-success{background:#1f0a2e;color:#c084fc;border-color:#c084fc}
