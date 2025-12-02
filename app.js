@@ -435,6 +435,7 @@ window.addEventListener('DOMContentLoaded', async()=>{
   const hero = byId('hero'); if(hero) hero.classList.add('matrix-anim');
   updateProfileName();
   const logoutBtn = byId('logout-btn'); if(logoutBtn){ logoutBtn.onclick = logout; }
+  const certNav = byId('cert-nav-btn'); if(certNav){ certNav.onclick = generateCertificate; }
 });
 
 // --- Terminal simulada ---
