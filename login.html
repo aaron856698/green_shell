@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Iniciar sesión — Jugando con Protocolos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="login-bg">
+  <div class="container py-5">
+    <div class="login-card card p-4 mx-auto" style="max-width:520px">
+      <h2 class="text-center">Jugando con Protocolos</h2>
+      <p class="text-center">Accede para continuar</p>
+      <div class="mb-3">
+        <label class="form-label">Usuario</label>
+        <input id="login-user" type="text" class="form-control" placeholder="Tu usuario" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Contraseña</label>
+        <input id="login-pass" type="password" class="form-control" placeholder="Tu contraseña" />
+      </div>
+      <div class="d-flex gap-2">
+        <button id="btn-register" class="btn btn-success w-50">Crear cuenta</button>
+        <button id="btn-login" class="btn btn-outline-success w-50">Ingresar</button>
+      </div>
+      <div class="mt-3 text-center"><a href="index.html" class="text-muted">Volver al inicio</a></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    function saveUser(username, password){ localStorage.setItem('user', JSON.stringify({ username, password })); }
+    function goHome(){ window.location.href = 'index.html'; }
+    function successAndGoHome(msg){
+      try{
+        if(window.Swal && Swal.fire){ Swal.fire('Éxito', msg, 'success').then(goHome); setTimeout(goHome, 1500); }
+        else { goHome(); }
+      }catch{ goHome(); }
+    }
+    document.getElementById('btn-register').addEventListener('click', ()=>{
+      const u = (document.getElementById('login-user').value||'').trim();
+      const p = (document.getElementById('login-pass').value||'').trim();
+      if(!u || !p){ if(window.Swal){ Swal.fire('Completa los campos','Usuario y contraseña son obligatorios','warning'); } return; }
+      saveUser(u,p); successAndGoHome('Bienvenido, '+u);
+    });
+    document.getElementById('btn-login').addEventListener('click', ()=>{
+      const u = (document.getElementById('login-user').value||'').trim();
+      const p = (document.getElementById('login-pass').value||'').trim();
+      if(!u || !p){ if(window.Swal){ Swal.fire('Completa los campos','Ingresa usuario y contraseña','warning'); } return; }
+      let stored=null; try{ stored = JSON.parse(localStorage.getItem('user')||'null'); }catch{}
+      if(!stored || !stored.username){ if(window.Swal){ Swal.fire('No hay cuenta','Primero crea una cuenta','warning'); } return; }
+      if(stored.username !== u){ if(window.Swal){ Swal.fire('Usuario incorrecto','','error'); } return; }
+      if(stored.password !== p){ if(window.Swal){ Swal.fire('Contraseña incorrecta','','error'); } return; }
+      successAndGoHome('Hola, '+u);
+    });
+    // Enter para enviar
+    document.getElementById('login-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('btn-login').click(); });
+    document.getElementById('login-user').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('btn-login').click(); });
+    // Mantenerse en login incluso si hay sesión (evita auto-redirect)
+  </script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+:root{--bg:#000;--card:#0b0f0b;--accent:#00ff88;--muted:#9ca3af}
+*{box-sizing:border-box}
+body{font-family:Inter,Segoe UI,Arial,Helvetica,sans-serif;margin:0;background:var(--bg);color:#00ff88}
+h1,h2,h3{font-family:'JetBrains Mono',monospace;letter-spacing:.5px}
+.site-header{background:linear-gradient(90deg,#0f172a,#0b2e44);color:white;position:sticky;top:0;z-index:10;box-shadow:0 8px 24px rgba(2,6,23,.25)}
+.navbar{background:transparent}
+.navbar-dark .navbar-brand, .navbar-dark .navbar-text{color:#00ff88}
+.btn{border-radius:8px}
+.actions .btn{margin-left:8px}
+.progress-panel{background:rgba(15,23,42,.95);color:#e2e8f0;border:1px solid #334155;border-radius:12px;padding:16px;margin-top:12px}
+.progress-header{display:flex;gap:12px;align-items:center}
+.progress-bar{flex:1;height:10px;background:#07140a;border-radius:999px;overflow:hidden}
+#progress-fill{height:100%;width:0;background:linear-gradient(90deg,#00ff88,#22d3ee)}
+.progress-panel .card{border-radius:8px;border:1px solid #334155;background:#0b1f2a;color:#e2e8f0}
+.progress-panel .card:hover{border-color:#22d3ee;box-shadow:0 0 0 2px rgba(34,211,238,.25)}
+.progress-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:12px}
+.progress-card{position:relative;border-radius:18px;padding:18px;background:radial-gradient(120% 120% at 0% 0%, rgba(0,255,136,.12), rgba(34,211,238,.08) 55%, rgba(0,0,0,.6) 100%) #0b0f0b;border:1px solid rgba(0,255,136,.18);box-shadow:0 14px 28px rgba(0,0,0,.55), inset 0 0 20px rgba(0,255,136,.08);color:#b8ffdf}
+.progress-card .lock{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:#07140a;border:1px solid rgba(0,255,136,.25);color:#00ff88;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:transform .2s ease,opacity .3s ease}
+.progress-card .lock.unlocked{opacity:.3;transform:scale(.9)}
+.progress-card .date{font-size:.85rem;color:#9cefc8;margin-bottom:8px}
+.progress-card .title{font-size:1.1rem;font-weight:600;color:#eafff5}
+.progress-card .sub{font-size:.9rem;color:#9cefc8;margin-bottom:10px}
+.progress-card .line{height:6px;background:#07140a;border-radius:999px;overflow:hidden;margin:8px 0}
+.progress-card .fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#00ff88,#22d3ee)}
+.progress-card .footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.avatars{display:flex;align-items:center}
+.avatar{width:24px;height:24px;border-radius:50%;background:#062c1b;border:1px solid rgba(0,255,136,.4);color:#00ff88;display:flex;align-items:center;justify-content:center;font-size:.75rem;margin-right:-6px;box-shadow:0 0 0 2px #0b0f0b}
+.pill{background:#07140a;color:#9cefc8;border:1px solid rgba(0,255,136,.25);border-radius:999px;padding:4px 8px;font-size:.8rem}
+.app-container{display:flex;gap:18px;padding:12px;max-width:none;margin:0}
+.sidebar{width:240px}
+.content{flex:1}
+.sidebar h2{color:#00ff88}
+.card{background:var(--card);padding:16px;border-radius:8px;box-shadow:0 6px 18px rgba(0,255,136,.08);margin-bottom:16px;border:1px solid rgba(0,255,136,.15)}
+.card, .modal-title{color:#b8ffdf}
+.hidden{display:none}
+#lesson-list{list-style:none;padding:0;margin:8px 0}
+#lesson-list li{padding:8px 10px;border-radius:6px;cursor:pointer;color:var(--accent)}
+#lesson-list li:hover{background:rgba(0,255,136,.1)}
+.hero{background:linear-gradient(135deg,#0b2e44 0%, #0f172a 60%);color:#e2e8f0}
+.hero h2{margin-top:0}
+.carousel-caption h5{font-family:'JetBrains Mono',monospace}
+.carousel-caption p{opacity:.9}
+.hero .carousel-item img{height:220px;object-fit:cover}
+.hero .carousel{max-height:220px}
+.sim-controls{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+.log{background:#000;color:#00ff88;padding:8px;border-radius:6px;max-height:120px;overflow:auto;margin-top:8px}
+#interactive-area{margin-top:12px}
+h2{margin-left:0;text-align:left}
+.drop-target{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{background:#062c1b;color:#00ff88;padding:10px 14px;border-radius:8px;cursor:grab;border:1px solid rgba(0,255,136,.5);font-weight:600}
+.slot{width:180px;min-height:40px;border:2px dashed rgba(0,255,136,.6);border-radius:8px;padding:8px;color:#b8ffdf;background:rgba(0,255,136,.06)}
+.correct{background:#e6ffed;border-color:#86efac}
+.site-footer{background:#0b1f2a;color:#9ca3af;text-align:center;padding:20px;margin-top:24px;border-top:1px solid #07140a}
+@media(max-width:800px){.app-container{flex-direction:column;padding:12px}.sidebar{width:auto}}
+.carousel-item img{filter:grayscale(20%)}
+.carousel-caption{background:rgba(0,0,0,.65);border-radius:8px;color:#00ff88}
+.carousel-caption h5{color:#00ff88}
+.carousel-caption p{color:#b8ffdf}
+.profile-card{background:#0b0f0b;border:1px solid rgba(0,255,136,.2)}
+.profile-avatar{width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid #00ff88}
+.profile-name{font-weight:600}
+.profile-meta .label{color:#00ff88;font-weight:600}
+/* Legibilidad del contenido de lecciones */
+#lesson-title{color:#00ff88}
+.content .card p{color:#b8ffdf;font-size:1rem;line-height:1.6;margin:8px 0}
+.content h3, #quiz-question{color:#b8ffdf}
+.sim-controls label{color:#b8ffdf}
+.text-muted{color:#9cefc8 !important}
+
+/* Botones verdes estilo Matrix */
+.btn-success{background:#062c1b;color:#00ff88;border-color:#00ff88}
+.btn-success:hover{background:#0b2e44;color:#00ff88;border-color:#00ff88}
+.btn-outline-success{color:#00ff88;border-color:#00ff88}
+.btn-outline-success:hover{background:#062c1b;color:#00ff88}
+
+/* Pantalla de inicio / login */
+.login-screen{position:fixed;inset:0;background:rgba(0,10,8,.9);display:flex;align-items:center;justify-content:center;z-index:1040}
+.login-card{max-width:520px}
+.login-card h2{color:#00ff88}
+.login-card p{color:#b8ffdf}
+
+/* Fondo para login */
+.login-bg{background:url('imagen/image.png') center/cover no-repeat fixed;min-height:100vh}
+.login-bg::before{content:"";position:fixed;inset:0;background:rgba(0,10,8,.7);pointer-events:none}
+.login-bg::after{content:"";position:fixed;inset:0;background:repeating-linear-gradient(180deg, rgba(0,255,136,.12) 0 2px, transparent 2px 6px);animation:rain 12s linear infinite;pointer-events:none}
+
+/* Terminal */
+.terminal{background:#000;color:#00ff88;border:1px solid rgba(0,255,136,.25)}
+.terminal .modal-header{border-bottom:1px solid rgba(0,255,136,.15)}
+.term-out{min-height:260px;background:#000;color:#00ff88;font-family:'JetBrains Mono',monospace;padding:12px;border-radius:6px;box-shadow:inset 0 0 24px rgba(0,255,136,.08)}
+.input-group-text{background:#062c1b;color:#00ff88;border-color:rgba(0,255,136,.25)}
+.form-control{background:#010101;color:#00ff88;border-color:rgba(0,255,136,.25)}
+.form-control::placeholder{color:#1f6a44}
+
+/* Editor simulado */
+.editor{background:#000;color:#00ff88;border:1px solid rgba(0,255,136,.25)}
+.editor .modal-header{border-bottom:1px solid rgba(0,255,136,.15)}
+#editor-area{min-height:240px;background:#010101;color:#00ff88;border-color:rgba(0,255,136,.25)}
+
+/* SweetAlert2 verde */
+.swal2-popup{background:#000 !important;color:#00ff88 !important;border:1px solid rgba(0,255,136,.25) !important}
+.swal2-title{color:#00ff88 !important}
+.swal2-html-container{color:#b8ffdf !important}
+.swal2-confirm{background:#062c1b !important;color:#00ff88 !important;border:1px solid #00ff88 !important}
+.swal2-deny,.swal2-cancel{background:#010101 !important;color:#00ff88 !important;border:1px solid rgba(0,255,136,.4) !important}
+.swal2-input{background:#010101 !important;color:#00ff88 !important;border-color:rgba(0,255,136,.25) !important}
+.swal2-actions{gap:8px}
+
+/* Matrix animation overlay */
+.matrix-anim{position:relative;overflow:visible}
+.matrix-anim::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg, rgba(0,255,136,.12) 0 2px, transparent 2px 6px);animation:rain 10s linear infinite;pointer-events:none}
+@keyframes rain{to{background-position-y:1000px}}

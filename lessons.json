@@ -1,0 +1,301 @@
+{
+  "lessons": [
+    {
+      "id": "osi",
+      "title": "Modelo OSI — capas y responsabilidades",
+      "content": "El modelo OSI divide la comunicación en 7 capas: Aplicación, Presentación, Sesión, Transporte, Red, Enlace y Física. Cada capa tiene responsabilidades específicas para facilitar la comunicación entre equipos.",
+      "interactive": "osi-drag",
+      "quiz": {
+        "q": "¿Qué capa se encarga del direccionamiento lógico (IPs)?",
+        "options": ["Capa de Transporte", "Capa de Red", "Capa de Enlace", "Capa de Aplicación"],
+        "a": 1
+      }
+    },
+    {
+      "id": "tcp-udp",
+      "title": "TCP vs UDP",
+      "content": "TCP es orientado a conexión y garantiza entrega; UDP es sin conexión y más rápido, pero no garantiza entrega. Usa UDP para streaming y DNS, TCP para HTTP, SSH, etc.",
+      "interactive": "sim-compare",
+      "quiz": {
+        "q": "¿Cuál ofrece control de congestión y retransmisión?",
+        "options": ["UDP", "TCP"],
+        "a": 1
+      }
+    },
+    {
+      "id": "ip",
+      "title": "IP (IPv4/IPv6)",
+      "content": "IP encapsula y enruta paquetes entre redes. IPv4 usa direcciones de 32 bits; IPv6, de 128 bits, con mejoras en direccionamiento y autoconfiguración.",
+      "interactive": "none",
+      "quiz": {
+        "q": "¿Cuál es el tamaño de dirección IPv4?",
+        "options": ["64 bits", "32 bits", "128 bits", "16 bits"],
+        "a": 1
+      }
+    },
+    {
+      "id": "icmp",
+      "title": "ICMP — Mensajes de control (ping)",
+      "content": "ICMP informa errores y estados en la red. El ping envía Echo Request y recibe Echo Reply para comprobar conectividad.",
+      "interactive": "icmp",
+      "quiz": {
+        "q": "¿Qué mensaje ICMP usa ping para probar conectividad?",
+        "options": ["Time Exceeded", "Echo Request/Reply", "Destination Unreachable", "Redirect"],
+        "a": 1
+      }
+    },
+    {
+      "id": "arp",
+      "title": "ARP — Resolución IP ↔ MAC",
+      "content": "ARP traduce IPs locales a direcciones MAC mediante broadcast (Request) y respuesta (Reply). Se usa en redes IPv4 dentro del mismo segmento.",
+      "interactive": "arp",
+      "quiz": {
+        "q": "¿Cómo pregunta ARP por una MAC?",
+        "options": ["Unicast al host", "Broadcast al segmento", "Multicast de capa 3", "HTTP"],
+        "a": 1
+      }
+    },
+    {
+      "id": "rarp",
+      "title": "RARP — Resolución inversa",
+      "content": "RARP resolvía IP a partir de una MAC. Está obsoleto y reemplazado por BOOTP/DHCP.",
+      "interactive": "none",
+      "quiz": {
+        "q": "¿Qué protocolo reemplazó a RARP?",
+        "options": ["DNS", "BOOTP/DHCP", "SSH", "ICMP"],
+        "a": 1
+      }
+    },
+    {
+      "id": "dhcp",
+      "title": "DHCP — Asignación dinámica de IP",
+      "content": "DHCP entrega IPs y parámetros (gateway, DNS) mediante el flujo DORA: Discover, Offer, Request, Ack.",
+      "interactive": "dhcp",
+      "quiz": {
+        "q": "¿Cuál es el orden correcto de DORA?",
+        "options": ["Offer, Discover, Ack, Request", "Discover, Offer, Request, Ack", "Request, Discover, Offer, Ack", "Ack, Request, Offer, Discover"],
+        "a": 1
+      }
+    },
+    {
+      "id": "dns",
+      "title": "DNS — Nombres a IP",
+      "content": "DNS traduce nombres de dominio a IP. Resolución recursiva: resolver local consulta root, TLD y autoritativos hasta obtener la respuesta.",
+      "interactive": "dns",
+      "quiz": {
+        "q": "¿Qué servidor conoce los registros definitivos de un dominio?",
+        "options": ["Root", "TLD", "Autoritativo", "Cache CDN"],
+        "a": 2
+      }
+    },
+    {
+      "id": "http-https",
+      "title": "HTTP/HTTPS — Web (80/443)",
+      "content": "HTTP define cómo clientes y servidores web intercambian recursos. HTTPS añade TLS para cifrar y autenticar el canal.",
+      "interactive": "tls",
+      "quiz": {
+        "q": "¿Qué añade HTTPS respecto a HTTP?",
+        "options": ["Puertos diferentes sin cifrado", "Cifrado y autenticación (TLS)", "Solo cambio de método GET", "UDP en vez de TCP"],
+        "a": 1
+      }
+    },
+    {
+      "id": "ftp",
+      "title": "FTP — Transferencia de archivos (21)",
+      "content": "FTP transfiere archivos con canales de control y datos. No cifra por defecto; usar FTPS o SFTP para seguridad.",
+      "interactive": "none",
+      "quiz": {
+        "q": "¿Por qué FTP es inseguro por defecto?",
+        "options": ["Usa UDP", "No cifra credenciales ni datos", "No tiene autenticación", "Solo funciona en LAN"],
+        "a": 1
+      }
+    },
+    {
+      "id": "sftp",
+      "title": "SFTP — Transferencia segura sobre SSH",
+      "content": "SFTP usa SSH para cifrar y autenticar la transferencia de archivos. No es FTP con TLS; es un subsistema de SSH.",
+      "interactive": "none",
+      "quiz": {
+        "q": "SFTP se basa en…",
+        "options": ["TLS", "SSH", "ICMP", "HTTP"],
+        "a": 1
+      }
+    },
+    {
+      "id": "smtp",
+      "title": "SMTP — Envío de correos (25)",
+      "content": "SMTP mueve correos entre servidores. Puede cifrarse con STARTTLS y autenticarse para envío desde clientes.",
+      "interactive": "none",
+      "quiz": {
+        "q": "¿Qué comando inicia cifrado oportunista en SMTP?",
+        "options": ["STARTTLS", "HELO", "DATA", "AUTH"],
+        "a": 0
+      }
+    },
+    {
+      "id": "pop3-imap",
+      "title": "POP3/IMAP — Recepción de correos (110/143)",
+      "content": "POP3 descarga y elimina mensajes del servidor; IMAP sincroniza carpetas y estados entre cliente y servidor.",
+      "interactive": "none",
+      "quiz": {
+        "q": "¿Cuál permite sincronizar carpetas y estados?",
+        "options": ["POP3", "IMAP"],
+        "a": 1
+      }
+    },
+    {
+      "id": "snmp",
+      "title": "SNMP — Gestión de red",
+      "content": "SNMP consulta y modifica parámetros de dispositivos mediante OIDs. Versiones v1/v2c usan community strings; v3 añade seguridad.",
+      "interactive": "none",
+      "quiz": {
+        "q": "¿Qué versión añade autenticación y cifrado?",
+        "options": ["v1", "v2c", "v3"],
+        "a": 2
+      }
+    },
+    {
+      "id": "telnet",
+      "title": "Telnet — Administración remota insegura (23)",
+      "content": "Telnet envía credenciales en texto plano. No debe usarse en redes inseguras; reemplazar por SSH.",
+      "interactive": "none",
+      "quiz": {
+        "q": "¿Por qué se evita Telnet en producción?",
+        "options": ["Usa puerto 23", "No cifra credenciales", "Solo funciona en Linux", "No tiene comandos"],
+        "a": 1
+      }
+    },
+    {
+      "id": "ssh",
+      "title": "SSH — Administración remota segura (22)",
+      "content": "SSH cifra y autentica sesiones remotas, soporta claves públicas, túneles y reenvío seguro.",
+      "interactive": "none",
+      "quiz": {
+        "q": "SSH autentica típicamente con…",
+        "options": ["Certificados X.509", "Claves públicas", "Contraseñas en texto plano", "Tokens ICMP"],
+        "a": 1
+      }
+    },
+    {
+      "id": "ldap",
+      "title": "LDAP — Directorios y autenticación",
+      "content": "LDAP consulta y modifica información en directorios (usuarios, grupos). LDAPS añade TLS para canal seguro.",
+      "interactive": "none",
+      "quiz": {
+        "q": "LDAPS añade…",
+        "options": ["UDP", "TLS", "ICMP", "FTP"],
+        "a": 1
+      }
+    },
+    {
+      "id": "ntp",
+      "title": "NTP — Sincronización de tiempo",
+      "content": "NTP sincroniza relojes de sistemas con servidores jerárquicos (stratum). Usa UDP y puede ser abusado si está mal configurado.",
+      "interactive": "none",
+      "quiz": {
+        "q": "NTP usa generalmente…",
+        "options": ["TCP", "UDP"],
+        "a": 1
+      }
+    },
+    {
+      "id": "tftp",
+      "title": "TFTP — Transferencia trivial",
+      "content": "TFTP es simple y sin autenticación, útil para boot de dispositivos en redes seguras. No debe exponerse públicamente.",
+      "interactive": "none",
+      "quiz": {
+        "q": "¿Por qué TFTP no es seguro?",
+        "options": ["No cifra y no autentica", "Usa ICMP", "Depende de TLS", "Solo funciona en IPv6"],
+        "a": 0
+      }
+    },
+    {
+      "id": "sip",
+      "title": "SIP — Señalización VoIP",
+      "content": "SIP inicia y gestiona sesiones de voz/video. Trabaja con RTP para medios y puede asegurar señalización con TLS.",
+      "interactive": "none",
+      "quiz": {
+        "q": "¿Qué protocolo lleva el audio en llamadas SIP?",
+        "options": ["RTP", "ICMP", "FTP", "DNS"],
+        "a": 0
+      }
+    },
+    {
+      "id": "rdp",
+      "title": "RDP — Escritorio remoto (3389)",
+      "content": "RDP ofrece acceso remoto gráfico a Windows. Requiere endurecimiento y actualizaciones por historial de vulnerabilidades.",
+      "interactive": "none",
+      "quiz": {
+        "q": "RDP corre típicamente en el puerto…",
+        "options": ["22", "23", "3389", "80"],
+        "a": 2
+      }
+    },
+    {
+      "id": "smb",
+      "title": "SMB — Compartición de archivos en Windows",
+      "content": "SMB permite compartir archivos e impresoras. Requiere autenticación y buenas prácticas; versiones antiguas tienen riesgos.",
+      "interactive": "none",
+      "quiz": {
+        "q": "SMB se usa para…",
+        "options": ["Correo", "Compartir archivos e impresoras", "DNS", "Tiempo"],
+        "a": 1
+      }
+    },
+    {
+      "id": "netbios",
+      "title": "NetBIOS — Redes Windows antiguas",
+      "content": "NetBIOS proporciona servicios de nombres y sesión en redes Windows clásicas. Largamente reemplazado por DNS/SMB modernos.",
+      "interactive": "none",
+      "quiz": {
+        "q": "NetBIOS fue reemplazado principalmente por…",
+        "options": ["ICMP", "DNS/SMB", "HTTP", "SSH"],
+        "a": 1
+      }
+    },
+    {
+      "id": "gre",
+      "title": "GRE — Encapsulación genérica",
+      "content": "GRE crea túneles que encapsulan paquetes de múltiples protocolos. No cifra; suele combinarse con IPsec para seguridad.",
+      "interactive": "none",
+      "quiz": {
+        "q": "GRE por sí solo…",
+        "options": ["Cifra el tráfico", "Solo encapsula sin cifrar", "Autentica usuarios", "Resuelve nombres"],
+        "a": 1
+      }
+    },
+    {
+      "id": "ipsec",
+      "title": "IPsec — Seguridad de red (VPN)",
+      "content": "IPsec protege el tráfico IP con autenticación y cifrado en modos AH/ESP, túnel o transporte.",
+      "interactive": "none",
+      "quiz": {
+        "q": "¿Qué componente IPsec cifra el contenido?",
+        "options": ["AH", "ESP", "ICMP", "ARP"],
+        "a": 1
+      }
+    },
+    {
+      "id": "tls",
+      "title": "TLS/SSL — Seguridad en transporte",
+      "content": "TLS cifra y autentica conexiones sobre transporte (normalmente TCP). Reemplaza SSL; usa certificados para identidad.",
+      "interactive": "tls",
+      "quiz": {
+        "q": "TLS verifica identidad con…",
+        "options": ["Community strings", "Certificados", "ARP", "Echo Reply"],
+        "a": 1
+      }
+    },
+    {
+      "id": "nmap",
+      "title": "Nmap y Pentesting — Detección de servicios",
+      "content": "Nmap escanea puertos TCP/UDP, usa ICMP para descubrir hosts, y detecta servicios como DNS, HTTP/HTTPS, FTP, SSH, SMTP, SNMP, SMB, RDP, LDAP, NTP, TFTP, SIP, e identifica versiones y configuraciones vulnerables.",
+      "interactive": "nmap",
+      "quiz": {
+        "q": "¿Qué familia de protocolos permite descubrir puertos abiertos?",
+        "options": ["TCP/UDP", "ICMP", "ARP", "DNS"],
+        "a": 0
+      }
+    }
+  ]
+}
