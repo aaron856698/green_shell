@@ -27,6 +27,159 @@ const LESSON_META = {
   'tcp-udp': { ports: ['TCP','UDP'], task: 'nmap -sS -p 22,80,443 <host>' }
 };
 
+const DEEP_INFO = {
+  'http-https': {
+    ports: 'HTTP 80/tcp, HTTPS 443/tcp',
+    details: [
+      'HTTP es texto plano; HTTPS añade TLS (cifrado + autenticación).',
+      'TLS usa certificados X.509 y handshake para secreto compartido.',
+      'Buenas prácticas: redirección 80→443, HSTS, TLS1.2/1.3, deshabilitar suites débiles.'
+    ]
+  },
+  'ftp': {
+    ports: 'FTP 21/tcp (control) y 20/tcp (datos activo)',
+    details: [
+      'Modelos activo/pasivo: en pasivo el servidor abre puertos de datos dinámicos.',
+      'FTP no cifra; usa FTPS (TLS) o SFTP (sobre SSH) para seguridad.',
+      'Filtra puertos pasivos en firewall y evita credenciales en texto plano.'
+    ]
+  },
+  'sftp': {
+    ports: 'SFTP 22/tcp (SSH)',
+    details: [
+      'SFTP es subsistema de SSH, distinto de FTP+TLS (FTPS).',
+      'Autenticación por claves públicas; tunel seguro cifrado.'
+    ]
+  },
+  'smtp': {
+    ports: 'SMTP 25/tcp (servidor-servidor), 587/tcp (submission), 465/tcp (SMTPS)',
+    details: [
+      'Submission (587) con AUTH y STARTTLS desde clientes.',
+      'TLS oportunista: STARTTLS; cifrado obligatorio en SMTPS (465).',
+      'SPF/DKIM/DMARC para reputación y seguridad de correo.'
+    ]
+  },
+  'pop3-imap': {
+    ports: 'POP3 110/tcp y 995/tcp (SSL), IMAP 143/tcp y 993/tcp (SSL)',
+    details: [
+      'POP3 descarga y opcionalmente borra; IMAP sincroniza carpetas/estados.',
+      'Usa TLS (STARTTLS o puertos SSL dedicados) para proteger credenciales.'
+    ]
+  },
+  'dns': {
+    ports: 'DNS 53/udp y 53/tcp',
+    details: [
+      'UDP para consultas normales; TCP para transferencias AXFR y respuestas grandes (DNSSEC).',
+      'Arquitectura: root → TLD → autoritativo; cache en resolvedor.'
+    ]
+  },
+  'dhcp': {
+    ports: 'DHCP 67/udp (servidor), 68/udp (cliente)',
+    details: [
+      'Flujo DORA: Discover, Offer, Request, Ack.',
+      'Opciones: gateway (router), DNS, tiempo de concesión.'
+    ]
+  },
+  'snmp': {
+    ports: 'SNMP 161/udp (consulta), 162/udp (traps)',
+    details: [
+      'v1/v2c usan community strings; v3 añade autenticación y cifrado.',
+      'Limita acceso por ACL y usa v3 en redes inseguras.'
+    ]
+  },
+  'telnet': {
+    ports: 'Telnet 23/tcp',
+    details: [
+      'Texto plano; reemplazar por SSH (22/tcp).'
+    ]
+  },
+  'ssh': {
+    ports: 'SSH 22/tcp',
+    details: [
+      'Autenticación por claves y túneles seguros (port forwarding).',
+      'Endurecer: Disable root login, usar claves, fail2ban.'
+    ]
+  },
+  'ldap': {
+    ports: 'LDAP 389/tcp, LDAPS 636/tcp',
+    details: [
+      'Directorios: usuarios, grupos, atributos; LDAPS cifra el canal.',
+      'Integra con SSO/Kerberos en entornos corporativos.'
+    ]
+  },
+  'ntp': {
+    ports: 'NTP 123/udp',
+    details: [
+      'Sincroniza tiempo con jerarquía stratum; cuidado con reflexión/amplificación.',
+      'Configura fuentes confiables y restringe comandos.'
+    ]
+  },
+  'tftp': {
+    ports: 'TFTP 69/udp',
+    details: [
+      'Sin autenticación; útil en redes controladas (PXE/boot).',
+      'No exponer a internet; limitar rutas.'
+    ]
+  },
+  'sip': {
+    ports: 'SIP 5060/udp|tcp y 5061/tls',
+    details: [
+      'Señalización; medios via RTP/RTCP en puertos dinámicos.',
+      'TLS para señalización y SRTP para medios.'
+    ]
+  },
+  'rdp': {
+    ports: 'RDP 3389/tcp',
+    details: [
+      'Escritorio remoto; habilitar NLA, parchear, usar VPN/bastión.'
+    ]
+  },
+  'smb': {
+    ports: 'SMB 445/tcp (NetBIOS: 137/udp, 138/udp, 139/tcp en entornos antiguos)',
+    details: [
+      'Compartición de archivos/impresoras; endurecer versiones antiguas.',
+      'Usar firmas SMB y limitar shares.'
+    ]
+  },
+  'netbios': {
+    ports: 'NetBIOS 137/udp (names), 138/udp (datagram), 139/tcp (session)',
+    details: [
+      'Servicios legacy de Windows; reemplazado por DNS/SMB modernos.'
+    ]
+  },
+  'gre': {
+    ports: 'GRE IP proto 47 (no usa puertos)',
+    details: [
+      'Encapsula múltiples protocolos; combinar con IPsec para cifrado.'
+    ]
+  },
+  'ipsec': {
+    ports: 'IPsec: AH proto 51, ESP proto 50 (no puertos)',
+    details: [
+      'Modos transporte/túnel; ESP cifra y autentica, AH solo autentica.'
+    ]
+  },
+  'tcp-udp': {
+    ports: 'TCP y UDP (capa de transporte)',
+    details: [
+      'TCP: conexión, ventana, retransmisión, control de congestión (Reno/Cubic).',
+      'UDP: datagramas sin conexión; menor latencia, sin garantías.'
+    ]
+  },
+  'icmp': {
+    ports: 'ICMP proto 1 (sin puertos)',
+    details: [
+      'Echo Request/Reply para ping; mensajes de error (time exceeded, unreachable).'
+    ]
+  },
+  'arp': {
+    ports: 'ARP capa 2 (sin puertos)',
+    details: [
+      'Resuelve IP→MAC en LAN via broadcast y reply.'
+    ]
+  }
+};
+
 function byId(id){return document.getElementById(id)}
 
 function renderLessonList(lessons){
@@ -53,6 +206,7 @@ function openLesson(lesson){
   const p = document.createElement('p'); p.textContent = lesson.content; contentEl.appendChild(p);
   const meta = LESSON_META[lesson.id];
   if(meta?.ports?.length){ const ports=document.createElement('div'); ports.className='badge bg-success'; ports.textContent='Puertos: '+meta.ports.join(', '); contentEl.appendChild(ports); }
+  renderDeepInfo(lesson);
   byId('interactive-area').innerHTML = '';
   byId('quiz').classList.remove('hidden');
   currentLesson = lesson;
@@ -66,6 +220,17 @@ function openLesson(lesson){
   if(lesson.interactive === 'tls') renderTlsSim();
   if(lesson.interactive === 'nmap') renderNmapSim();
   renderTask(lesson);
+}
+
+function renderDeepInfo(lesson){
+  const info = DEEP_INFO[lesson.id]; if(!info) return;
+  const card = document.createElement('div'); card.className='card';
+  const h = document.createElement('h3'); h.textContent = 'Detalle práctico';
+  const ports = document.createElement('div'); ports.className='pill'; ports.textContent = info.ports;
+  const ul = document.createElement('ul');
+  info.details.forEach(d=>{ const li=document.createElement('li'); li.textContent=d; ul.appendChild(li); });
+  card.appendChild(h); card.appendChild(ports); card.appendChild(ul);
+  byId('lesson-content').appendChild(card);
 }
 
 // --- QUIZ ---
