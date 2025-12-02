@@ -350,19 +350,34 @@ function generateCertificate(){
     ctx.drawImage(bg,0,0,canvas.width,canvas.height);
     ctx.fillStyle = 'rgba(0,10,8,.55)'; ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.textAlign='center';
-    ctx.fillStyle = '#00ff88'; ctx.font = '36px JetBrains Mono, monospace';
-    ctx.fillText('Academia de Hacking GREEN_SHELL', canvas.width/2, 120);
-    ctx.fillStyle = '#eafff5'; ctx.font = '48px JetBrains Mono, monospace';
+    // encabezado academia
+    ctx.fillStyle = '#00ff88'; ctx.font = '40px JetBrains Mono, monospace';
+    ctx.shadowColor = 'rgba(0,255,136,.6)'; ctx.shadowBlur = 14; ctx.fillText('Academia de Hacking GREEN_SHELL', canvas.width/2, 110);
+    // título principal más grande
+    ctx.fillStyle = '#eafff5'; ctx.font = '64px JetBrains Mono, monospace'; ctx.shadowColor = 'rgba(255,255,255,.35)'; ctx.shadowBlur = 18;
     ctx.fillText('Certificado de Finalización', canvas.width/2, 180);
-    ctx.fillStyle = '#b8ffdf'; ctx.font = '28px JetBrains Mono, monospace';
+    // otorgado a
+    ctx.shadowBlur = 0; ctx.fillStyle = '#b8ffdf'; ctx.font = '34px JetBrains Mono, monospace';
     ctx.fillText('Otorgado a', canvas.width/2, 240);
-    ctx.fillStyle = '#00ff88'; ctx.font = '44px JetBrains Mono, monospace';
-    ctx.fillText(user, canvas.width/2, 295);
-    ctx.fillStyle = '#b8ffdf'; ctx.font = '24px JetBrains Mono, monospace';
-    ctx.fillText('Curso intensivo de 5 horas de prácticas', canvas.width/2, 340);
-    ctx.fillText('Puertos y servicios de red', canvas.width/2, 372);
-    ctx.fillStyle = '#9cefc8'; ctx.font = '20px JetBrains Mono, monospace';
-    ctx.fillText(new Date().toLocaleDateString('es-ES'), canvas.width/2, 410);
+    // nombre con glow y recuadro
+    const nameY = 305; const padX = 24; const padY = 18;
+    const textWidth = ctx.measureText(user).width;
+    ctx.fillStyle = 'rgba(0,10,8,.6)'; ctx.strokeStyle = 'rgba(0,255,136,.35)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.roundRect((canvas.width-textWidth)/2 - padX, nameY - 54, textWidth + padX*2, 70, 10); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#00ff88'; ctx.font = '54px JetBrains Mono, monospace'; ctx.shadowColor = 'rgba(0,255,136,.6)'; ctx.shadowBlur = 16;
+    ctx.fillText(user, canvas.width/2, nameY);
+    ctx.shadowBlur = 0;
+    // detalle del curso
+    ctx.fillStyle = '#b8ffdf'; ctx.font = '28px JetBrains Mono, monospace';
+    ctx.fillText('Curso intensivo de 5 horas de prácticas', canvas.width/2, 360);
+    ctx.fillText('Puertos y servicios de red', canvas.width/2, 395);
+    // fecha
+    ctx.fillStyle = '#9cefc8'; ctx.font = '22px JetBrains Mono, monospace';
+    ctx.fillText(new Date().toLocaleDateString('es-ES'), canvas.width/2, 430);
+    // líneas decorativas
+    ctx.strokeStyle = 'rgba(0,255,136,.35)'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(200, 205); ctx.lineTo(canvas.width-200, 205); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(240, 415); ctx.lineTo(canvas.width-240, 415); ctx.stroke();
     const data = canvas.toDataURL('image/png'); const dl = document.getElementById('cert-download'); if(dl){ dl.href = data; }
     const modalEl = document.getElementById('certModal'); if(window.bootstrap && modalEl){ const m = new bootstrap.Modal(modalEl); m.show(); }
   };
