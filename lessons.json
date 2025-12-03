@@ -1,9 +1,20 @@
 {
   "lessons": [
     {
+      "id": "codigo",
+      "title": "💻 Código — instrucciones para la máquina",
+      "content": "El código es el conjunto de instrucciones que escribimos para que la computadora haga tareas específicas. Se organiza en archivos y programas, y se ejecuta en entornos controlados (como esta app, que simula sin correr nada real).\n\nPensalo como una receta: el chef (CPU) sigue paso a paso lo que el desarrollador (vos) escribió. Si la receta está clara y segura, el resultado es confiable.\n\nBuenas prácticas: separar responsabilidades, validar entradas y nunca ejecutar comandos del sistema sin necesidad (en este curso lo simulamos).",
+      "interactive": "none",
+      "quiz": {
+        "q": "¿Qué analogía describe mejor el código?",
+        "options": ["Un dibujo al azar", "Una receta con pasos claros"],
+        "a": 1
+      }
+    },
+    {
       "id": "osi",
-      "title": "Modelo OSI — capas y responsabilidades",
-      "content": "El modelo OSI divide la comunicación en 7 capas: Aplicación, Presentación, Sesión, Transporte, Red, Enlace y Física. Cada capa tiene responsabilidades específicas para facilitar la comunicación entre equipos.",
+      "title": "🧩 Modelo OSI — capas y responsabilidades",
+      "content": "El modelo OSI organiza la comunicación en 7 capas: Aplicación, Presentación, Sesión, Transporte, Red, Enlace y Física. Cada capa ofrece servicios a la superior y se apoya en la inferior.\n\nPensalo como una torre: arriba están las apps (lo que ves), abajo los cables y señales. Cada nivel tiene una tarea clara (direcciones, confiabilidad, formato, etc.).\n\nAnalogía: enviar un paquete por correo. Una capa escribe la carta (Aplicación), otra el idioma/encoding (Presentación), otra gestiona la conversación (Sesión), otra garantiza entrega (Transporte), otra decide rutas (Red), otra pone remitente/destinatario físico (Enlace), y la última lo lleva por el cable (Física).",
       "interactive": "osi-drag",
       "quiz": {
         "q": "¿Qué capa se encarga del direccionamiento lógico (IPs)?",
@@ -13,8 +24,8 @@
     },
     {
       "id": "tcp-udp",
-      "title": "TCP vs UDP",
-      "content": "TCP es orientado a conexión y garantiza entrega; UDP es sin conexión y más rápido, pero no garantiza entrega. Usa UDP para streaming y DNS, TCP para HTTP, SSH, etc.",
+      "title": "📦 TCP vs UDP 🚀",
+      "content": "TCP (capa 4) asegura entrega, orden y control de congestión; establece conexión (handshake) y reintenta si hay pérdidas. UDP (capa 4) es liviano: manda y no confirma, ideal para velocidad.\n\nUsá TCP para confiabilidad (HTTP, SSH, SMTP). Usá UDP para latencia baja y tolerancia a pérdidas (DNS, streaming, VoIP).\n\nAnalogía: TCP es correo certificado con acuse y orden; UDP es una postal rápida: si se pierde, se reenvía pero no por el protocolo.",
       "interactive": "sim-compare",
       "quiz": {
         "q": "¿Cuál ofrece control de congestión y retransmisión?",
@@ -24,8 +35,8 @@
     },
     {
       "id": "ip",
-      "title": "IP (IPv4/IPv6)",
-      "content": "IP encapsula y enruta paquetes entre redes. IPv4 usa direcciones de 32 bits; IPv6, de 128 bits, con mejoras en direccionamiento y autoconfiguración.",
+      "title": "🌐 IP (IPv4/IPv6)",
+      "content": "IP (capa 3) decide cómo viajan los paquetes entre redes. Define direcciones (IPv4 32 bits, IPv6 128 bits), rutas y fragmentación si hace falta.\n\nIPv6 mejora el espacio de direcciones, autoconfiguración y seguridad; convive con IPv4 mediante túneles y dual‑stack.\n\nAnalogía: es el GPS del paquete: elige caminos y entrega al barrio correcto, aunque el edificio exacto lo maneja la capa de enlace.",
       "interactive": "none",
       "quiz": {
         "q": "¿Cuál es el tamaño de dirección IPv4?",
@@ -35,8 +46,8 @@
     },
     {
       "id": "icmp",
-      "title": "ICMP — Mensajes de control (ping)",
-      "content": "ICMP informa errores y estados en la red. El ping envía Echo Request y recibe Echo Reply para comprobar conectividad.",
+      "title": "📡 ICMP — Mensajes de control (ping)",
+      "content": "ICMP (capa 3) reporta errores y condiciones (inaccesible, tiempo excedido). No lleva datos de usuario: ayuda al tráfico IP.\n\nPing usa Echo Request/Reply para medir latencia y disponibilidad. Traceroute aprovecha Time Exceeded para descubrir saltos.\n\nAnalogía: es el semáforo y carteles de la ruta IP, avisando desvíos, demoras y si el destino responde.",
       "interactive": "icmp",
       "quiz": {
         "q": "¿Qué mensaje ICMP usa ping para probar conectividad?",
@@ -46,8 +57,8 @@
     },
     {
       "id": "arp",
-      "title": "ARP — Resolución IP ↔ MAC",
-      "content": "ARP traduce IPs locales a direcciones MAC mediante broadcast (Request) y respuesta (Reply). Se usa en redes IPv4 dentro del mismo segmento.",
+      "title": "🪪 ARP — Resolución IP ↔ MAC",
+      "content": "ARP (capa 2/3 frontera) resuelve IP→MAC en la misma LAN. Emite un broadcast “¿quién tiene esta IP?” y el dueño responde con su MAC.\n\nMantiene una caché para acelerar envíos siguientes. Funciona en IPv4; en IPv6 se usa Neighbor Discovery.\n\nAnalogía: preguntar en una oficina quién es la persona (MAC) detrás del interno (IP) para llevarle la carta.",
       "interactive": "arp",
       "quiz": {
         "q": "¿Cómo pregunta ARP por una MAC?",
@@ -57,8 +68,8 @@
     },
     {
       "id": "rarp",
-      "title": "RARP — Resolución inversa",
-      "content": "RARP resolvía IP a partir de una MAC. Está obsoleto y reemplazado por BOOTP/DHCP.",
+      "title": "🔁 RARP — Resolución inversa",
+      "content": "RARP pedía al servidor la IP usando la MAC del cliente (lo inverso de ARP).\n\nQuedó obsoleto por BOOTP y luego DHCP, que además entregan gateway, DNS y otros parámetros.\n\nAnalogía: preguntar “¿qué dirección me corresponde?” mostrando tu credencial física (MAC).",
       "interactive": "none",
       "quiz": {
         "q": "¿Qué protocolo reemplazó a RARP?",
@@ -68,8 +79,8 @@
     },
     {
       "id": "dhcp",
-      "title": "DHCP — Asignación dinámica de IP",
-      "content": "DHCP entrega IPs y parámetros (gateway, DNS) mediante el flujo DORA: Discover, Offer, Request, Ack.",
+      "title": "🔌 DHCP — Asignación dinámica de IP (67/68)",
+      "content": "DHCP (capa de aplicación) asigna IP, máscara, gateway y DNS automáticamente. Usa el flujo DORA: Discover, Offer, Request, Ack.\n\nClientes piden y servidores responden con una concesión por tiempo limitado (lease).\n\nAnalogía: como recibir un ticket con tu asiento, fila y puerta para entrar a un evento (IP, máscara, gateway).",
       "interactive": "dhcp",
       "quiz": {
         "q": "¿Cuál es el orden correcto de DORA?",
@@ -79,8 +90,8 @@
     },
     {
       "id": "dns",
-      "title": "DNS — Nombres a IP",
-      "content": "DNS traduce nombres de dominio a IP. Resolución recursiva: resolver local consulta root, TLD y autoritativos hasta obtener la respuesta.",
+      "title": "🧭 DNS — Nombres a IP (53/UDP/TCP)",
+      "content": "DNS traduce dominios a IPs. La resolución recursiva pasa por servidores root, luego TLD (.com, .org) y finalmente el autoritativo del dominio.\n\nUsa UDP 53 para consultas típicas y TCP 53 para transferencias y respuestas grandes (DNSSEC).\n\nAnalogía: una guía telefónica distribuida: preguntás a quien sabe a quién consultar hasta llegar al dueño del número.",
       "interactive": "dns",
       "quiz": {
         "q": "¿Qué servidor conoce los registros definitivos de un dominio?",
@@ -90,8 +101,8 @@
     },
     {
       "id": "http-https",
-      "title": "HTTP/HTTPS — Web (80/443)",
-      "content": "HTTP define cómo clientes y servidores web intercambian recursos. HTTPS añade TLS para cifrar y autenticar el canal.",
+      "title": "🌐🔒 HTTP/HTTPS — Web (80/443)",
+      "content": "HTTP (capa de aplicación) define métodos (GET, POST), cabeceras y códigos de estado.\n\nHTTPS agrega TLS para cifrado e identidad (certificados), protegiendo credenciales y datos en tránsito.\n\nAnalogía: navegar con y sin sobre cerrado: HTTPS es el sobre sellado con garantía de quién lo firmó.",
       "interactive": "tls",
       "quiz": {
         "q": "¿Qué añade HTTPS respecto a HTTP?",
@@ -101,8 +112,8 @@
     },
     {
       "id": "ftp",
-      "title": "FTP — Transferencia de archivos (21)",
-      "content": "FTP transfiere archivos con canales de control y datos. No cifra por defecto; usar FTPS o SFTP para seguridad.",
+      "title": "📁 FTP — Transferencia de archivos (21)",
+      "content": "FTP usa un canal de control (21/tcp) y otro de datos (activo/pasivo). Por defecto no cifra credenciales ni contenido.\n\nPara seguridad, usar FTPS (TLS sobre FTP) o SFTP (sub‑sistema SSH).\n\nAnalogía: dos líneas telefónicas: una para hablar (control) y otra para enviar cajas (datos).",
       "interactive": "none",
       "quiz": {
         "q": "¿Por qué FTP es inseguro por defecto?",
@@ -112,8 +123,8 @@
     },
     {
       "id": "sftp",
-      "title": "SFTP — Transferencia segura sobre SSH",
-      "content": "SFTP usa SSH para cifrar y autenticar la transferencia de archivos. No es FTP con TLS; es un subsistema de SSH.",
+      "title": "🔐📁 SFTP — Seguro sobre SSH (22)",
+      "content": "SFTP es un subsistema de SSH (22/tcp) para transferir archivos con cifrado y autenticación.\n\nNo es “FTP con TLS”; es un protocolo distinto que aprovecha el canal seguro de SSH.\n\nAnalogía: usar una bóveda (SSH) para mover cajas (archivos) con guardias en la puerta (autenticación).",
       "interactive": "none",
       "quiz": {
         "q": "SFTP se basa en…",
@@ -123,8 +134,8 @@
     },
     {
       "id": "smtp",
-      "title": "SMTP — Envío de correos (25)",
-      "content": "SMTP mueve correos entre servidores. Puede cifrarse con STARTTLS y autenticarse para envío desde clientes.",
+      "title": "✉️ SMTP — Envío de correos (25/587/465)",
+      "content": "SMTP transfiere correo entre servidores (25/tcp). Para envío de clientes se usa 587/tcp con AUTH y STARTTLS; 465/tcp es SMTPS.\n\nEl cifrado oportunista se inicia con STARTTLS cuando el servidor lo soporta.\n\nAnalogía: correo entre sucursales (25) y mostrador para clientes (587) con credenciales y sobre sellado (TLS).",
       "interactive": "none",
       "quiz": {
         "q": "¿Qué comando inicia cifrado oportunista en SMTP?",
@@ -134,8 +145,8 @@
     },
     {
       "id": "pop3-imap",
-      "title": "POP3/IMAP — Recepción de correos (110/143)",
-      "content": "POP3 descarga y elimina mensajes del servidor; IMAP sincroniza carpetas y estados entre cliente y servidor.",
+      "title": "📥 POP3/IMAP — Recepción (110/143/993/995)",
+      "content": "POP3 (110/tcp, 995/tcp SSL) descarga mensajes (opcionalmente los borra). IMAP (143/tcp, 993/tcp SSL) sincroniza carpetas, estados y banderas.\n\nIMAP es ideal para múltiples dispositivos; POP3 para flujos simples.\n\nAnalogía: POP3 es retirar cartas y llevarlas; IMAP es leerlas en el buzón compartido, siempre sincronizado.",
       "interactive": "none",
       "quiz": {
         "q": "¿Cuál permite sincronizar carpetas y estados?",
@@ -145,8 +156,8 @@
     },
     {
       "id": "snmp",
-      "title": "SNMP — Gestión de red",
-      "content": "SNMP consulta y modifica parámetros de dispositivos mediante OIDs. Versiones v1/v2c usan community strings; v3 añade seguridad.",
+      "title": "🛠️ SNMP — Gestión de red (161/udp)",
+      "content": "SNMP consulta/ajusta parámetros de equipos con OIDs. v1/v2c usan community strings (como contraseñas de lectura/escritura).\n\nSNMPv3 añade autenticación y cifrado para operar de forma segura.\n\nAnalogía: un panel de control remoto que pide valores por código (OID) y recibe respuestas estructuradas.",
       "interactive": "none",
       "quiz": {
         "q": "¿Qué versión añade autenticación y cifrado?",
@@ -156,8 +167,8 @@
     },
     {
       "id": "telnet",
-      "title": "Telnet — Administración remota insegura (23)",
-      "content": "Telnet envía credenciales en texto plano. No debe usarse en redes inseguras; reemplazar por SSH.",
+      "title": "⚠️ Telnet — Remoto inseguro (23/tcp)",
+      "content": "Telnet transmite todo en texto plano (incluidas credenciales).\n\nEn redes inseguras puede ser interceptado. Migrá a SSH para cifrado y autenticación por claves.\n\nAnalogía: hablar por un megáfono en público: cualquiera puede escuchar.",
       "interactive": "none",
       "quiz": {
         "q": "¿Por qué se evita Telnet en producción?",
@@ -167,8 +178,8 @@
     },
     {
       "id": "ssh",
-      "title": "SSH — Administración remota segura (22)",
-      "content": "SSH cifra y autentica sesiones remotas, soporta claves públicas, túneles y reenvío seguro.",
+      "title": "🔐 SSH — Remoto seguro (22/tcp)",
+      "content": "SSH cifra y autentica sesiones remotas, soporta claves públicas, reenvío de puertos y túneles seguros.\n\nEs la alternativa segura a Telnet para administración y transferencia (SFTP/scp).\n\nAnalogía: una línea privada con candado y llave única (clave pública/privada).",
       "interactive": "none",
       "quiz": {
         "q": "SSH autentica típicamente con…",
@@ -178,8 +189,8 @@
     },
     {
       "id": "ldap",
-      "title": "LDAP — Directorios y autenticación",
-      "content": "LDAP consulta y modifica información en directorios (usuarios, grupos). LDAPS añade TLS para canal seguro.",
+      "title": "🗂️ LDAP — Directorios y autenticación (389/636)",
+      "content": "LDAP gestiona información estructurada (usuarios, grupos, atributos) y permite búsquedas y modificaciones.\n\nLDAPS (636/tcp) añade TLS para cifrar el canal. Integra con SSO/Kerberos en entornos corporativos.\n\nAnalogía: una agenda empresarial central donde se consulta y actualiza la ficha de cada persona.",
       "interactive": "none",
       "quiz": {
         "q": "LDAPS añade…",
@@ -189,8 +200,8 @@
     },
     {
       "id": "ntp",
-      "title": "NTP — Sincronización de tiempo",
-      "content": "NTP sincroniza relojes de sistemas con servidores jerárquicos (stratum). Usa UDP y puede ser abusado si está mal configurado.",
+      "title": "⏱️ NTP — Sincronización de tiempo (123/udp)",
+      "content": "NTP alinea relojes de equipos con servidores jerárquicos (stratum). Usa UDP 123 y filtros para evitar abuso.\n\nLa exactitud es clave para registros, certificados y seguridad.\n\nAnalogía: poner todos los relojes en hora con un reloj maestro confiable.",
       "interactive": "none",
       "quiz": {
         "q": "NTP usa generalmente…",
@@ -200,8 +211,8 @@
     },
     {
       "id": "tftp",
-      "title": "TFTP — Transferencia trivial",
-      "content": "TFTP es simple y sin autenticación, útil para boot de dispositivos en redes seguras. No debe exponerse públicamente.",
+      "title": "📤 TFTP — Transferencia trivial (69/udp)",
+      "content": "TFTP es minimalista y sin autenticación; útil para boot/firmware en redes controladas.\n\nNo lo expongas a internet: carece de cifrado y control de acceso.\n\nAnalogía: dejar una caja en una mesa común sin candado: solo sirve en ambientes seguros.",
       "interactive": "none",
       "quiz": {
         "q": "¿Por qué TFTP no es seguro?",
@@ -211,8 +222,8 @@
     },
     {
       "id": "sip",
-      "title": "SIP — Señalización VoIP",
-      "content": "SIP inicia y gestiona sesiones de voz/video. Trabaja con RTP para medios y puede asegurar señalización con TLS.",
+      "title": "📞 SIP — Señalización VoIP (5060/5061)",
+      "content": "SIP establece/termina llamadas y negocia parámetros. El audio/video viaja por RTP/RTCP en puertos dinámicos.\n\nTLS puede proteger la señalización (SIPS). SRTP protege los medios.\n\nAnalogía: un recepcionista que conecta la llamada; la voz viaja por otra línea dedicada (RTP).",
       "interactive": "none",
       "quiz": {
         "q": "¿Qué protocolo lleva el audio en llamadas SIP?",
@@ -222,8 +233,8 @@
     },
     {
       "id": "rdp",
-      "title": "RDP — Escritorio remoto (3389)",
-      "content": "RDP ofrece acceso remoto gráfico a Windows. Requiere endurecimiento y actualizaciones por historial de vulnerabilidades.",
+      "title": "🖥️ RDP — Escritorio remoto (3389)",
+      "content": "RDP brinda escritorio remoto gráfico en Windows. Habilitar NLA y mantener actualizado reduce riesgos conocidos.\n\nÚsalo detrás de VPN o bastión y limita accesos.\n\nAnalogía: un control remoto para manejar la PC a distancia, con autenticación fuerte.",
       "interactive": "none",
       "quiz": {
         "q": "RDP corre típicamente en el puerto…",
@@ -233,8 +244,8 @@
     },
     {
       "id": "smb",
-      "title": "SMB — Compartición de archivos en Windows",
-      "content": "SMB permite compartir archivos e impresoras. Requiere autenticación y buenas prácticas; versiones antiguas tienen riesgos.",
+      "title": "🗄️ SMB — Compartición en Windows (445/tcp)",
+      "content": "SMB comparte archivos/impresoras en red. Versiones antiguas pueden ser vulnerables; usar firmas y restricciones.\n\nIntegra con Active Directory y permisos granulados.\n\nAnalogía: una carpeta compartida con candado digital y reglas de acceso.",
       "interactive": "none",
       "quiz": {
         "q": "SMB se usa para…",
@@ -244,8 +255,8 @@
     },
     {
       "id": "netbios",
-      "title": "NetBIOS — Redes Windows antiguas",
-      "content": "NetBIOS proporciona servicios de nombres y sesión en redes Windows clásicas. Largamente reemplazado por DNS/SMB modernos.",
+      "title": "🧱 NetBIOS — Windows antiguo (137/138/139)",
+      "content": "NetBIOS ofrecía nombres, datagramas y sesión en redes Windows clásicas.\n\nFue reemplazado por DNS/SMB actuales por eficiencia y seguridad.\n\nAnalogía: una agenda local vieja y limitada, sustituida por sistemas modernos.",
       "interactive": "none",
       "quiz": {
         "q": "NetBIOS fue reemplazado principalmente por…",
@@ -255,8 +266,8 @@
     },
     {
       "id": "gre",
-      "title": "GRE — Encapsulación genérica",
-      "content": "GRE crea túneles que encapsulan paquetes de múltiples protocolos. No cifra; suele combinarse con IPsec para seguridad.",
+      "title": "📦 GRE — Encapsulación genérica (proto 47)",
+      "content": "GRE encapsula paquetes de múltiples protocolos dentro de IP, formando túneles lógicos.\n\nNo cifra ni autentica: suele combinarse con IPsec para proteger el canal.\n\nAnalogía: meter cajas pequeñas dentro de una caja grande para enviarlas por el mismo camino.",
       "interactive": "none",
       "quiz": {
         "q": "GRE por sí solo…",
@@ -266,8 +277,8 @@
     },
     {
       "id": "ipsec",
-      "title": "IPsec — Seguridad de red (VPN)",
-      "content": "IPsec protege el tráfico IP con autenticación y cifrado en modos AH/ESP, túnel o transporte.",
+      "title": "🛡️ IPsec — Seguridad de red (VPN)",
+      "content": "IPsec protege tráfico IP con autenticación y/o cifrado. AH (proto 51) autentica; ESP (proto 50) cifra y autentica.\n\nSe usa en modos transporte o túnel para VPNs.\n\nAnalogía: un sobre dentro de otro: el exterior asegura origen (AH), el interior garantiza confidencialidad (ESP).",
       "interactive": "none",
       "quiz": {
         "q": "¿Qué componente IPsec cifra el contenido?",
@@ -277,8 +288,8 @@
     },
     {
       "id": "tls",
-      "title": "TLS/SSL — Seguridad en transporte",
-      "content": "TLS cifra y autentica conexiones sobre transporte (normalmente TCP). Reemplaza SSL; usa certificados para identidad.",
+      "title": "🔒 TLS/SSL — Seguridad en transporte",
+      "content": "TLS cifra y autentica sobre TCP, reemplazando SSL. Usa certificados X.509 y handshake para negociar claves y suites.\n\nEvita ataques de intermediario (MITM) y protege credenciales y datos.\n\nAnalogía: un candado con sello oficial: además de cerrar, confirma quién lo puso.",
       "interactive": "tls",
       "quiz": {
         "q": "TLS verifica identidad con…",
@@ -288,8 +299,8 @@
     },
     {
       "id": "nmap",
-      "title": "Nmap y Pentesting — Detección de servicios",
-      "content": "Nmap escanea puertos TCP/UDP, usa ICMP para descubrir hosts, y detecta servicios como DNS, HTTP/HTTPS, FTP, SSH, SMTP, SNMP, SMB, RDP, LDAP, NTP, TFTP, SIP, e identifica versiones y configuraciones vulnerables.",
+      "title": "🔍 Nmap y Pentesting — Detección de servicios",
+      "content": "Nmap detecta hosts y puertos abiertos (TCP/UDP), identifica servicios y versiones, y ayuda a mapear superficies de ataque. Puede hacer SYN scan, UDP scan y service/version detection.\n\nEn entornos controlados, se usa para practicar reconocimiento sin generar tráfico real (como esta simulación).\n\nAnalogía: recorrer puertas de una casa y ver qué habitaciones tienen luz, qué actividad hay y qué cerraduras usan.",
       "interactive": "nmap",
       "quiz": {
         "q": "¿Qué familia de protocolos permite descubrir puertos abiertos?",
