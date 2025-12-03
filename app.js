@@ -203,7 +203,8 @@ function renderLessonList(lessons){
 function openLesson(lesson){
   byId('lesson-title').textContent = lesson.title;
   const contentEl = byId('lesson-content'); contentEl.innerHTML='';
-  const p = document.createElement('p'); p.textContent = lesson.content; contentEl.appendChild(p);
+  const paragraphs = String(lesson.content||'').split(/\n\s*\n/);
+  paragraphs.forEach(txt=>{ const p=document.createElement('p'); p.textContent = txt; contentEl.appendChild(p); });
   const meta = LESSON_META[lesson.id];
   if(meta?.ports?.length){ const ports=document.createElement('div'); ports.className='badge bg-success'; ports.textContent='Puertos: '+meta.ports.join(', '); contentEl.appendChild(ports); }
   renderDeepInfo(lesson);
