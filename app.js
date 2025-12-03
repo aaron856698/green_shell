@@ -185,10 +185,16 @@ function byId(id){return document.getElementById(id)}
 function renderLessonList(lessons){
   const ul = byId('lesson-list');
   ul.innerHTML = '';
+  const p = loadProgress();
   lessons.forEach(l=>{
     const li = document.createElement('li');
     const meta = LESSON_META[l.id];
-    li.textContent = l.title;
+    const quizDone = !!p[l.id]?.quiz; const interDone = !!p[l.id]?.interactive;
+    const pct = (quizDone?50:0)+(interDone?50:0);
+    const title = document.createElement('span'); title.textContent = l.title;
+    const status = document.createElement('span'); status.className='badge bg-success ms-2'; status.textContent = pct===100? 'Completado' : (quizDone? 'Quiz ✓' : 'Pendiente');
+    li.appendChild(title);
+    li.appendChild(status);
     if(meta?.ports?.length){
       const badge = document.createElement('span');
       badge.className = 'badge bg-success ms-2';
@@ -214,6 +220,7 @@ function openLesson(lesson){
     titleEl.appendChild(pill);
   }
   renderDeepInfo(lesson);
+  renderCommandsTips(lesson);
   byId('interactive-area').innerHTML = '';
   byId('quiz').classList.remove('hidden');
   currentLesson = lesson;
@@ -222,10 +229,13 @@ function openLesson(lesson){
   if(lesson.interactive === 'sim-compare') { /* hint shown in simulator */ }
   if(lesson.interactive === 'arp') renderArpSim();
   if(lesson.interactive === 'dns') renderDnsSim();
+  if(lesson.id === 'dns') renderDnsAnimSim();
   if(lesson.interactive === 'icmp') renderIcmpSim();
   if(lesson.interactive === 'dhcp') renderDhcpSim();
   if(lesson.interactive === 'tls') renderTlsSim();
   if(lesson.interactive === 'nmap') renderNmapSim();
+  if(lesson.id === 'tcp-udp') renderTcpHandshakeSim();
+  if(lesson.id === 'http-https') renderHttpHeadersSim();
   renderTask(lesson);
 }
 
@@ -495,6 +505,95 @@ function simulateNmap(host, type){
   return base.concat([`No scan type selected.`]);
 }
 
+// --- DNS animación con nodos y flechas ---
+function renderDnsAnimSim(){
+  const area = byId('interactive-area');
+  const card = document.createElement('div'); card.className='card';
+  const h = document.createElement('h3'); h.textContent='Resolución DNS recursiva (animación)';
+  const canvas = document.createElement('canvas'); canvas.width=720; canvas.height=220; canvas.id='dns-canvas';
+  const btn = document.createElement('button'); btn.className='btn btn-success mt-2'; btn.textContent='Animar';
+  card.appendChild(h); card.appendChild(canvas); card.appendChild(btn); area.appendChild(card);
+  const ctx = canvas.getContext('2d');
+  const nodes = {
+    client: {x:60,y:110,label:'Cliente'},
+    resolver: {x:180,y:110,label:'Resolvedor'},
+    root: {x:360,y:50,label:'Root'},
+    tld: {x:360,y:110,label:'TLD (.com)'},
+    auth: {x:360,y:170,label:'Autoritativo'}
+  };
+  function drawBase(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.textAlign='center'; ctx.font='12px JetBrains Mono, monospace';
+    Object.values(nodes).forEach(n=>{
+      ctx.fillStyle='#0f172a'; ctx.fillRect(n.x-20,n.y-20,40,40); ctx.strokeStyle='#cbd5e1'; ctx.strokeRect(n.x-20,n.y-20,40,40);
+      ctx.fillStyle='#b8ffdf'; ctx.fillText(n.label, n.x, n.y-28);
+    });
+  }
+  function animLine(a,b,text,clr){
+    let t=0; const steps=40; const id=setInterval(()=>{
+      drawBase();
+      ctx.strokeStyle=clr||'#22d3ee'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(a.x+(b.x-a.x)*(t/steps), a.y+(b.y-a.y)*(t/steps)); ctx.stroke();
+      ctx.fillStyle='#b8ffdf'; ctx.fillText(text, (a.x+b.x)/2, (a.y+b.y)/2 - 12);
+      t++; if(t>steps){ clearInterval(id); nextStage(); }
+    },20);
+    return id;
+  }
+  let stage=0; let running=false;
+  function nextStage(){
+    stage++;
+    if(stage===1) animLine(nodes.client, nodes.resolver, 'Consulta www.ejemplo.com');
+    else if(stage===2) animLine(nodes.resolver, nodes.root, 'Consulta al root');
+    else if(stage===3) animLine(nodes.root, nodes.resolver, 'Respuesta: consulta TLD .com', '#00ff88');
+    else if(stage===4) animLine(nodes.resolver, nodes.tld, 'Consulta al TLD .com');
+    else if(stage===5) animLine(nodes.tld, nodes.resolver, 'Respuesta: ve al autoritativo', '#00ff88');
+    else if(stage===6) animLine(nodes.resolver, nodes.auth, 'Consulta al autoritativo');
+    else if(stage===7) animLine(nodes.auth, nodes.resolver, 'Respuesta: A 93.184.216.34', '#00ff88');
+    else if(stage===8){ animLine(nodes.resolver, nodes.client, 'IP final 93.184.216.34', '#00ff88'); setTimeout(()=>{ const note=document.createElement('div'); note.className='card'; note.textContent='Resolución completa y cacheada en el resolvedor.'; card.appendChild(note); markLessonInteractiveDone(currentLesson?.id); setTimeout(()=>note.remove(),2500); },900); }
+  }
+  drawBase();
+  btn.onclick = ()=>{ if(running) return; running=true; stage=0; nextStage(); };
+}
+
+// --- HTTP/HTTPS simulador de solicitud-respuesta con headers ---
+function renderHttpHeadersSim(){
+  const area = byId('interactive-area');
+  const card = document.createElement('div'); card.className='card';
+  const h = document.createElement('h3'); h.textContent='HTTP/HTTPS — Solicitud y respuesta';
+  const controls = document.createElement('div'); controls.className='sim-controls';
+  controls.innerHTML = `
+    <label>Método: <select id="http-method"><option>GET</option><option>POST</option></select></label>
+    <label>Host: <input id="http-host" value="ejemplo.com"/></label>
+    <label>Ruta: <input id="http-path" value="/"/></label>
+    <label>HTTPS: <input id="http-secure" type="checkbox" checked/></label>
+  `;
+  const headers = document.createElement('textarea'); headers.className='form-control'; headers.placeholder='Headers'; headers.value = 'User-Agent: GreenShell/1.0\nAccept: */*';
+  const body = document.createElement('textarea'); body.className='form-control'; body.placeholder='Body (solo POST)'; body.style.marginTop='8px';
+  const btn = document.createElement('button'); btn.className='btn btn-success mt-2'; btn.textContent='Enviar (simulado)';
+  const out = document.createElement('div'); out.className='log';
+  card.appendChild(h); card.appendChild(controls); card.appendChild(headers); card.appendChild(body); card.appendChild(btn); card.appendChild(out); area.appendChild(card);
+  btn.onclick = ()=>{
+    const method = byId('http-method').value;
+    const host = byId('http-host').value || 'ejemplo.com';
+    const path = byId('http-path').value || '/';
+    const secure = byId('http-secure').checked;
+    const reqLine = `${method} ${path} HTTP/1.1`;
+    const reqHeaders = `Host: ${host}\n${headers.value}` + (method==='POST' ? `\nContent-Length: ${(body.value||'').length}` : '');
+    const scheme = secure ? 'https' : 'http'; const port = secure ? 443 : 80;
+    const resp = [
+      `${scheme.toUpperCase()} → puerto ${port}`,
+      `TLS ${secure? '1.3 negociado':'no aplicado'}`,
+      'HTTP/1.1 200 OK',
+      'Server: nginx (sim)',
+      'Content-Type: text/html; charset=utf-8',
+      secure? 'Strict-Transport-Security: max-age=31536000' : ''],
+      body.value && method==='POST' ? '<html>OK (POST)</html>' : '<html>OK</html>';
+    out.innerHTML='';
+    [reqLine, reqHeaders, '', '--- respuesta ---', ...resp.filter(Boolean)].forEach(l=>{ const d=document.createElement('div'); d.textContent=l; out.appendChild(d); });
+    markLessonInteractiveDone(currentLesson?.id);
+  };
+}
+
 function loadProgress(){
   try{ return JSON.parse(localStorage.getItem('progress')||'{}'); }catch{ return {}; }
 }
@@ -533,6 +632,7 @@ function updateProgressUI(){
   const pfill = byId('profile-fill'); if(pfill) pfill.style.width = pct+'%';
   const ppct = byId('profile-pct'); if(ppct) ppct.textContent = pct+'%';
   renderProgressMenu(window.__lessons);
+  renderLessonList(window.__lessons);
   renderCertificateButton();
   updateCertAccess(pct);
 }
@@ -947,4 +1047,60 @@ function simulateWinCommand(cmd){
   if(tokens[0]==='reverse-shell' && tokens[1]==='connect'){ const target=(tokens[2]||'linux').toLowerCase(); const c=getConn(); c.connected=true; c.a='win'; c.b= target==='linux'?'linux':'win'; setConn(c); sendCross('win','(sim) canal conectado'); sendCross(c.b,'(sim) canal conectado'); return ['(sim) conectado']; }
   if(tokens[0]==='revsend'){ const text = tokens.slice(1).join(' ').replace(/^"|"$/g,''); const c=getConn(); if(!c.connected) return ['(sim) no hay canal']; sendCross('win',`win → ${text}`); sendCross(c.b,`linux ← ${text}`); return ['(sim) enviado']; }
   return base.concat(['Comando no reconocido. Escribe "help".']);
+}
+const COMMANDS_TIPS = {
+  'dns': [
+    'dig +short A ejemplo.com',
+    'nslookup ejemplo.com'
+  ],
+  'http-https': [
+    'curl -I https://ejemplo.com',
+    'openssl s_client -connect ejemplo.com:443 -servername ejemplo.com'
+  ],
+  'ssh': [
+    'ssh -L 8080:localhost:80 user@host',
+    'sftp user@host'
+  ],
+  'nmap': [
+    'nmap -sS -p 22,80,443 192.168.1.10',
+    'nmap -sV 192.168.1.10'
+  ],
+  'tcp-udp': [
+    'nc -vz 192.168.1.10 80',
+    'nc -u -vz 192.168.1.10 53'
+  ]
+};
+function renderCommandsTips(lesson){
+  const cmds = COMMANDS_TIPS[lesson.id]; if(!cmds) return;
+  const area = byId('lesson-content');
+  const card = document.createElement('div'); card.className='card';
+  const h = document.createElement('h3'); h.textContent='Comandos útiles';
+  const list = document.createElement('div'); list.className='drop-target';
+  cmds.forEach(c=>{ const btn=document.createElement('button'); btn.className='chip'; btn.textContent=c; btn.onclick=()=>openTerminalWithCommand(c); list.appendChild(btn); });
+  card.appendChild(h); card.appendChild(list); area.appendChild(card);
+}
+
+function renderTcpHandshakeSim(){
+  const area = byId('interactive-area');
+  const card = document.createElement('div'); card.className='card';
+  const h = document.createElement('h3'); h.textContent='Handshake TCP (SYN → SYN-ACK → ACK)';
+  const canvas = document.createElement('canvas'); canvas.width=700; canvas.height=160; canvas.id='tcp-canvas';
+  const btn = document.createElement('button'); btn.className='btn btn-success mt-2'; btn.textContent='Animar handshake';
+  card.appendChild(h); card.appendChild(canvas); card.appendChild(btn); area.appendChild(card);
+  const ctx = canvas.getContext('2d');
+  const drawBase = ()=>{
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#0f172a'; ctx.fillRect(40,40,10,80); ctx.fillRect(canvas.width-50,40,10,80);
+    ctx.strokeStyle='#cbd5e1'; ctx.beginPath(); ctx.moveTo(50,80); ctx.lineTo(canvas.width-50,80); ctx.stroke();
+  };
+  const anim = ()=>{
+    drawBase(); let x=60; let stage=0; const speed=8;
+    const id = setInterval(()=>{
+      drawBase();
+      if(stage===0){ ctx.fillStyle='#2b6df6'; ctx.fillRect(x,70,30,20); ctx.fillStyle='#b8ffdf'; ctx.fillText('SYN', x+4, 65); x+=speed; if(x>canvas.width-120){ stage=1; x=canvas.width-120; } }
+      else if(stage===1){ ctx.fillStyle='#22d3ee'; ctx.fillRect(x,70,40,20); ctx.fillStyle='#b8ffdf'; ctx.fillText('SYN-ACK', x+2, 65); x-=speed; if(x<80){ stage=2; x=80; } }
+      else if(stage===2){ ctx.fillStyle='#2b6df6'; ctx.fillRect(x,70,30,20); ctx.fillStyle='#b8ffdf'; ctx.fillText('ACK', x+4, 65); x+=speed; if(x>canvas.width-120){ clearInterval(id); const note=document.createElement('div'); note.className='card'; note.textContent='Canal listo: comienza transferencia de datos.'; card.appendChild(note); markLessonInteractiveDone(currentLesson?.id); setTimeout(()=>note.remove(),2500); } }
+    },30);
+  };
+  btn.onclick = anim;
 }
