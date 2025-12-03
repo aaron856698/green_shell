@@ -27,11 +27,10 @@
       "title": "📦 TCP vs UDP 🚀",
       "content": "TCP y UDP viven en la capa de Transporte. TCP ofrece conexión confiable: handshake (SYN/ACK), ordenamiento, retransmisión, control de congestión y flujo. Es ideal cuando no podés perder datos ni desordenarlos (HTTP, SSH, SMTP).\n\nUDP es sin conexión: envía datagramas sin confirmar ni reintentar automáticamente. Es perfecto cuando importa la latencia y el app tolera pérdidas (DNS, streaming, VoIP). Con UDP, la aplicación debe manejar reintentos/compensación si los necesita.\n\nAnalogía: TCP es un envío certificado con acuse y seguimiento; UDP es una postal exprés. Si la postal se pierde, la aplicación decide si reintenta; el protocolo no lo hace por vos.",
       "interactive": "sim-compare",
-      "quiz": {
-        "q": "¿Cuál ofrece control de congestión y retransmisión?",
-        "options": ["UDP", "TCP"],
-        "a": 1
-      }
+      "quiz": [
+        {"q": "¿Cuál ofrece control de congestión y retransmisión?", "options": ["UDP", "TCP"], "a": 1},
+        {"q": "¿UDP es orientado a conexión?", "options": ["Sí", "No"], "a": 1}
+      ]
     },
     {
       "id": "ip",
@@ -82,33 +81,30 @@
       "title": "🔌 DHCP — Asignación dinámica de IP (67/68)",
       "content": "DHCP automatiza la configuración de red: asigna IP, máscara, gateway, DNS y más mediante el ciclo DORA (Discover, Offer, Request, Ack). Los servidores gestionan pools y tiempos de concesión para reutilizar direcciones y mantener orden.\n\nSoporta reservas por MAC, opciones específicas (como NTP, dominio), y renovación cuando el lease expira. Es fundamental en redes corporativas y domésticas para simplificar administración.\n\nAnalogía: recibir un ticket con asiento asignado y reglas de uso por tiempo determinado; si termina, pedís renovación.",
       "interactive": "dhcp",
-      "quiz": {
-        "q": "¿Cuál es el orden correcto de DORA?",
-        "options": ["Offer, Discover, Ack, Request", "Discover, Offer, Request, Ack", "Request, Discover, Offer, Ack", "Ack, Request, Offer, Discover"],
-        "a": 1
-      }
+      "quiz": [
+        {"q": "¿Cuál es el orden correcto de DORA?", "options": ["Offer, Discover, Ack, Request", "Discover, Offer, Request, Ack", "Request, Discover, Offer, Ack", "Ack, Request, Offer, Discover"], "a": 1},
+        {"q": "¿Qué par indica servidor/cliente?", "options": ["67 servidor / 68 cliente", "68 servidor / 67 cliente"], "a": 0}
+      ]
     },
     {
       "id": "dns",
       "title": "🧭 DNS — Nombres a IP (53/UDP/TCP)",
       "content": "DNS resuelve nombres a direcciones y otros registros (A/AAAA, MX, NS, TXT). La resolución recursiva comienza en el resolvedor local, que consulta a root servers, luego TLD, y termina en el autoritativo del dominio. Se cachean respuestas para mejorar rendimiento.\n\nFunciona principalmente sobre UDP 53; TCP 53 se usa para transferencias de zona (AXFR) y respuestas extensas, especialmente con DNSSEC. La seguridad depende de validar firmas y de políticas anti‑spoofing.\n\nAnalogía: una guía distribuida y jerárquica: vas escalando consultas hasta llegar al custodio oficial del registro.",
       "interactive": "dns",
-      "quiz": {
-        "q": "¿Qué servidor conoce los registros definitivos de un dominio?",
-        "options": ["Root", "TLD", "Autoritativo", "Cache CDN"],
-        "a": 2
-      }
+      "quiz": [
+        {"q": "¿Qué servidor conoce los registros definitivos de un dominio?", "options": ["Root", "TLD", "Autoritativo", "Cache CDN"], "a": 2},
+        {"q": "¿Qué puerto usa consultas típicas de DNS?", "options": ["53/UDP", "80/TCP"], "a": 0}
+      ]
     },
     {
       "id": "http-https",
       "title": "🌐🔒 HTTP/HTTPS — Web (80/443)",
       "content": "HTTP es el protocolo de la web: define métodos (GET, POST, PUT…), cabeceras, cuerpos y códigos de estado (200, 404…). Trabaja típicamente sobre TCP y permite extensiones (cookies, compresión, caching).\n\nHTTPS añade TLS: se negocian suites de cifrado y se validan certificados para asegurar identidad y confidencialidad. Mejores prácticas incluyen HSTS, TLS 1.2/1.3 y deshabilitar suites débiles.\n\nAnalogía: enviar una carta con sobre (HTTP) o con sobre sellado oficial (HTTPS) que además certifica el remitente.",
       "interactive": "tls",
-      "quiz": {
-        "q": "¿Qué añade HTTPS respecto a HTTP?",
-        "options": ["Puertos diferentes sin cifrado", "Cifrado y autenticación (TLS)", "Solo cambio de método GET", "UDP en vez de TCP"],
-        "a": 1
-      }
+      "quiz": [
+        {"q": "¿Qué añade HTTPS respecto a HTTP?", "options": ["Puertos diferentes sin cifrado", "Cifrado y autenticación (TLS)", "Solo cambio de método GET", "UDP en vez de TCP"], "a": 1},
+        {"q": "¿Qué puerto usa HTTPS por defecto?", "options": ["443", "80"], "a": 0}
+      ]
     },
     {
       "id": "ftp",
@@ -181,11 +177,10 @@
       "title": "🔐 SSH — Remoto seguro (22/tcp)",
       "content": "SSH establece canales cifrados para administración remota. Autentica por claves públicas, soporta reenvío de puertos, túneles y transferencia de archivos (SFTP/scp). Configuraciones seguras deshabilitan login de root y fuerzan claves.\n\nCon SSH podés crear túneles seguros para aplicaciones, encapsular tráfico y auditar sesiones. Es estándar en administración moderna.\n\nAnalogía: una línea privada con candado fuerte y control de quién entra (llave pública/privada).",
       "interactive": "none",
-      "quiz": {
-        "q": "SSH autentica típicamente con…",
-        "options": ["Certificados X.509", "Claves públicas", "Contraseñas en texto plano", "Tokens ICMP"],
-        "a": 1
-      }
+      "quiz": [
+        {"q": "SSH autentica típicamente con…", "options": ["Certificados X.509", "Claves públicas", "Contraseñas en texto plano", "Tokens ICMP"], "a": 1},
+        {"q": "¿Puerto por defecto de SSH?", "options": ["22", "23"], "a": 0}
+      ]
     },
     {
       "id": "ldap",
@@ -291,22 +286,20 @@
       "title": "🔒 TLS/SSL — Seguridad en transporte",
       "content": "TLS asegura transporte con cifrado simétrico negociado, autenticación mediante certificados y verificación de integridad. Reemplaza SSL con mejoras de seguridad y rendimiento. El handshake selecciona suites y establece claves (a menudo con ECDHE para forward secrecy).\n\nBuenas prácticas: TLS 1.2/1.3, certificados válidos, HSTS y eliminar suites débiles.\n\nAnalogía: un candado moderno con un certificado oficial que garantiza quién lo colocó y que el candado no se puede forzar fácilmente.",
       "interactive": "tls",
-      "quiz": {
-        "q": "TLS verifica identidad con…",
-        "options": ["Community strings", "Certificados", "ARP", "Echo Reply"],
-        "a": 1
-      }
+      "quiz": [
+        {"q": "TLS verifica identidad con…", "options": ["Community strings", "Certificados", "ARP", "Echo Reply"], "a": 1},
+        {"q": "¿Sobre qué capa se usa típicamente TLS?", "options": ["Transporte (TCP)", "Física"], "a": 0}
+      ]
     },
     {
       "id": "nmap",
       "title": "🔍 Nmap y Pentesting — Detección de servicios",
       "content": "Nmap realiza reconocimiento: descubre hosts, puertos abiertos y servicios, identifica versiones y, con cuidado, detecta configuraciones débiles. Escaneos comunes incluyen SYN (rápido y sigiloso), UDP (más incierto por silencios), y detección de servicios y scripts NSE.\n\nEn prácticas seguras se limita el alcance y se evita tráfico disruptivo. Esta plataforma simula salidas para aprender sin riesgo.\n\nAnalogía: revisar una casa: ver qué puertas están abiertas, qué actividad hay adentro y qué tipos de cerraduras protegen cada acceso.",
       "interactive": "nmap",
-      "quiz": {
-        "q": "¿Qué familia de protocolos permite descubrir puertos abiertos?",
-        "options": ["TCP/UDP", "ICMP", "ARP", "DNS"],
-        "a": 0
-      }
+      "quiz": [
+        {"q": "¿Qué familia de protocolos permite descubrir puertos abiertos?", "options": ["TCP/UDP", "ICMP", "ARP", "DNS"], "a": 0},
+        {"q": "¿Qué opción detecta versión de servicios?", "options": ["-sV", "-sn"], "a": 0}
+      ]
     }
   ]
 }

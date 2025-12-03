@@ -201,12 +201,18 @@ function renderLessonList(lessons){
 }
 
 function openLesson(lesson){
-  byId('lesson-title').textContent = lesson.title;
+  const titleEl = byId('lesson-title');
+  titleEl.textContent = lesson.title;
   const contentEl = byId('lesson-content'); contentEl.innerHTML='';
   const paragraphs = String(lesson.content||'').split(/\n\s*\n/);
   paragraphs.forEach(txt=>{ const p=document.createElement('p'); p.textContent = txt; contentEl.appendChild(p); });
   const meta = LESSON_META[lesson.id];
-  if(meta?.ports?.length){ const ports=document.createElement('div'); ports.className='badge bg-success'; ports.textContent='Puertos: '+meta.ports.join(', '); contentEl.appendChild(ports); }
+  const portsVal = meta?.ports;
+  if(portsVal){
+    const ports=document.createElement('div'); ports.className='badge bg-success'; ports.textContent = typeof portsVal==='string' ? portsVal : 'Puertos: '+portsVal.join(', '); contentEl.appendChild(ports);
+    const pill=document.createElement('span'); pill.className='badge bg-success ms-2'; pill.textContent = typeof portsVal==='string' ? portsVal : 'Puertos: '+portsVal.join(', ');
+    titleEl.appendChild(pill);
+  }
   renderDeepInfo(lesson);
   byId('interactive-area').innerHTML = '';
   byId('quiz').classList.remove('hidden');
@@ -238,18 +244,31 @@ function renderDeepInfo(lesson){
 let currentLesson = null;
 function renderQuiz(quiz){
   if(!quiz) { byId('quiz').classList.add('hidden'); return }
-  byId('quiz').classList.remove('hidden');
-  byId('quiz-question').textContent = quiz.q;
-  const container = byId('quiz-answers'); container.innerHTML = '';
-  quiz.options.forEach((opt,i)=>{
-    const btn = document.createElement('button');
-    btn.className='chip'; btn.textContent = opt; btn.onclick = ()=>{
-      const result = byId('quiz-result');
-      if(i===quiz.a){ result.textContent = '✅ ¡Correcto!'; result.className=''; markLessonComplete(currentLesson?.id); renderTask(currentLesson); }
-      else{ result.textContent = '❌ Incorrecto. Intenta otra vez.'; result.className=''; }
-    };
-    container.appendChild(btn);
-  })
+  const items = Array.isArray(quiz) ? quiz : [quiz];
+  let idx = 0;
+  const show = (k)=>{
+    byId('quiz').classList.remove('hidden');
+    const q = items[k];
+    byId('quiz-question').textContent = q.q;
+    const container = byId('quiz-answers'); container.innerHTML = '';
+    byId('quiz-result').textContent='';
+    q.options.forEach((opt,i)=>{
+      const btn = document.createElement('button');
+      btn.className='chip'; btn.textContent = opt;
+      btn.onclick = ()=>{
+        const result = byId('quiz-result');
+        if(i===q.a){
+          result.textContent = '✅ ¡Correcto!';
+          if(k===items.length-1){ markLessonComplete(currentLesson?.id); renderTask(currentLesson); }
+          else { idx=k+1; setTimeout(()=>show(idx),600); }
+        } else {
+          result.textContent = '❌ Incorrecto. Intenta otra vez.';
+        }
+      };
+      container.appendChild(btn);
+    })
+  };
+  show(idx);
 }
 
 // --- OSI drag-drop mini-game ---
@@ -259,6 +278,10 @@ function renderOsiDrag(){
   const shuffled = layers.slice().sort(()=>Math.random()-0.5);
   const instr = document.createElement('p'); instr.textContent='Arrastra las capas en orden desde Física (abajo) hasta Aplicación (arriba).';
   area.appendChild(instr);
+  const controls = document.createElement('div'); controls.className='drop-target';
+  const resetBtn = document.createElement('button'); resetBtn.className='btn btn-outline-success'; resetBtn.textContent='Reiniciar';
+  const hintBtn = document.createElement('button'); hintBtn.className='btn btn-success ms-2'; hintBtn.textContent='Pista';
+  controls.appendChild(resetBtn); controls.appendChild(hintBtn); area.appendChild(controls);
   const source = document.createElement('div'); source.className='drop-target';
   shuffled.forEach(name=>{
     const chip = document.createElement('div'); chip.className='chip'; chip.draggable=true; chip.textContent=name;
@@ -271,12 +294,24 @@ function renderOsiDrag(){
     const slot = document.createElement('div'); slot.className='slot'; slot.dataset.pos=idx; slot.textContent=slotName+': (arrastra aquí)';
     slot.ondragover = e=>e.preventDefault();
     slot.ondrop = e=>{
-      e.preventDefault(); const name = e.dataTransfer.getData('text/plain'); slot.textContent = slotName+' → '+name; slot.classList.add('correct');
+      e.preventDefault(); const name = e.dataTransfer.getData('text/plain'); if(!name) return;
+      const used = Array.from(target.querySelectorAll('.slot')).some(s=>s.textContent.includes('→ '+name));
+      if(used) return;
+      const chip = Array.from(source.children).find(c=>c.textContent===name); if(chip) chip.remove();
+      slot.textContent = slotName+' → '+name;
       checkOsiAnswer(target, layers);
     }
     target.appendChild(slot);
   })
   area.appendChild(target);
+  resetBtn.onclick = ()=>{
+    target.querySelectorAll('.slot').forEach((s,i)=>{ s.textContent = layers[i]+': (arrastra aquí)'; s.classList.remove('correct'); });
+    source.innerHTML=''; shuffled.sort(()=>Math.random()-0.5).forEach(name=>{ const chip = document.createElement('div'); chip.className='chip'; chip.draggable=true; chip.textContent=name; chip.ondragstart = e=>{ e.dataTransfer.setData('text/plain', name); }; source.appendChild(chip); });
+  };
+  hintBtn.onclick = ()=>{
+    const hint = document.createElement('div'); hint.className='card'; hint.textContent='Pista: Física → Enlace → Red → Transporte → Sesión → Presentación → Aplicación'; area.appendChild(hint);
+    setTimeout(()=>hint.remove(),4000);
+  };
 }
 
 function checkOsiAnswer(target, layers){
@@ -288,6 +323,7 @@ function checkOsiAnswer(target, layers){
     // Note: our slots are ordered Física->Aplicación, correct should match that order
     if(placed.join('|')===correct.join('|')){
       const note = document.createElement('div'); note.textContent='🎉 ¡Perfecto! Has ordenado correctamente.'; note.className='card'; document.getElementById('interactive-area').appendChild(note);
+      markLessonInteractiveDone(currentLesson?.id);
     } else {
       const note = document.createElement('div'); note.textContent='Intenta de nuevo: algunas posiciones no coinciden.'; note.className='card'; document.getElementById('interactive-area').appendChild(note);
     }
