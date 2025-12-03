@@ -1,8 +1,21 @@
 // app.js - lógica para cargar lecciones, quizzes y simuladores
+const DEFAULT_LESSONS = [
+  { id:'codigo', title:'💻 Código — instrucciones para la máquina', content:'Contenido no cargado desde archivo. Usa esta versión básica.\n\nEl curso funciona con simuladores seguros.\n\nAnalogía: receta profesional bien medida.', interactive:'none', quiz:{ q:'¿El curso es seguro?', options:['No','Sí'], a:1 } },
+  { id:'osi', title:'🧩 Modelo OSI — capas y responsabilidades', content:'7 capas con funciones claras.\n\nDiagnóstico por capa.\n\nAnalogía: envío postal profesional.', interactive:'osi-drag', quiz:{ q:'¿IP en qué capa?', options:['Transporte','Red','Enlace','Aplicación'], a:1 } },
+  { id:'tcp-udp', title:'📦 TCP vs UDP 🚀', content:'TCP confiable, UDP rápido.\n\nElige según latencia vs control.\n\nAnalogía: certificado vs postal.', interactive:'sim-compare', quiz:{ q:'¿Quién retransmite?', options:['UDP','TCP'], a:1 } },
+  { id:'dns', title:'🧭 DNS — Nombres a IP (53/UDP/TCP)', content:'Resolución recursiva y cache.\n\nUDP 53, TCP 53 para AXFR y grandes.\n\nAnalogía: guía distribuida.', interactive:'dns', quiz:{ q:'¿Quién tiene registros finales?', options:['Root','TLD','Autoritativo','Cache'], a:2 } },
+  { id:'http-https', title:'🌐🔒 HTTP/HTTPS — Web (80/443)', content:'Métodos y cabeceras.\n\nTLS añade cifrado y autenticación.\n\nAnalogía: sobre normal vs sellado.', interactive:'tls', quiz:{ q:'¿Qué añade HTTPS?', options:['Nada','TLS'], a:1 } }
+];
 async function loadLessons(){
-  const res = await fetch('lessons.json');
-  const data = await res.json();
-  return data.lessons;
+  try{
+    const res = await fetch('lessons.json');
+    if(!res.ok) throw new Error('fetch fail');
+    const data = await res.json();
+    const arr = Array.isArray(data.lessons)? data.lessons: [];
+    return arr.length? arr : DEFAULT_LESSONS;
+  }catch{
+    return DEFAULT_LESSONS;
+  }
 }
 
 const LESSON_META = {
@@ -580,16 +593,17 @@ function renderHttpHeadersSim(){
     const reqLine = `${method} ${path} HTTP/1.1`;
     const reqHeaders = `Host: ${host}\n${headers.value}` + (method==='POST' ? `\nContent-Length: ${(body.value||'').length}` : '');
     const scheme = secure ? 'https' : 'http'; const port = secure ? 443 : 80;
-    const resp = [
+    const respHeaders = [
       `${scheme.toUpperCase()} → puerto ${port}`,
-      `TLS ${secure? '1.3 negociado':'no aplicado'}`,
+      secure? 'TLS 1.3 negociado' : 'Sin TLS',
       'HTTP/1.1 200 OK',
       'Server: nginx (sim)',
       'Content-Type: text/html; charset=utf-8',
-      secure? 'Strict-Transport-Security: max-age=31536000' : ''],
-      body.value && method==='POST' ? '<html>OK (POST)</html>' : '<html>OK</html>';
+      secure? 'Strict-Transport-Security: max-age=31536000' : ''
+    ];
+    const respBody = method==='POST' ? '<html>OK (POST)</html>' : '<html>OK</html>';
     out.innerHTML='';
-    [reqLine, reqHeaders, '', '--- respuesta ---', ...resp.filter(Boolean)].forEach(l=>{ const d=document.createElement('div'); d.textContent=l; out.appendChild(d); });
+    [reqLine, reqHeaders, '', '--- respuesta ---', ...respHeaders.filter(Boolean), respBody].forEach(l=>{ const d=document.createElement('div'); d.textContent=l; out.appendChild(d); });
     markLessonInteractiveDone(currentLesson?.id);
   };
 }
