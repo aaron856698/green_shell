@@ -24,3 +24,8 @@ Siguientes mejoras posibles:
 - Migrar a framework (React/Vue) si quieres una app más compleja
 
 Si quieres, puedo añadir: más lecciones, un sistema de puntos o convertirlo a React.
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
+![alt text](image-3.png)
+![alt text](image-4.png)
